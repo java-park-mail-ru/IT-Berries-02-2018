@@ -1,4 +1,4 @@
-package com.itberries_2018.demo.models;
+package com.itberries2018.demo.models;
 
 
 import java.util.Objects;
@@ -18,7 +18,7 @@ public class User {
     }
 
     public User(long id, String login, String email, String password) {
-        this.id=id;
+        this.id = id;
         this.login = login;
         this.email = email;
         this.password = password;
@@ -39,7 +39,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
 
 
     public long getId() {
@@ -64,12 +63,15 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (!Objects.equals(getClass(), obj.getClass()))
+        }
+        if (!Objects.equals(getClass(), obj.getClass())) {
             return false;
+        }
         final User other = (User) obj;
         //noinspection RedundantIfStatement
         if (id != other.id) {

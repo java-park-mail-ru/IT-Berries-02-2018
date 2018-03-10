@@ -1,6 +1,6 @@
-package com.itberries_2018.demo.services;
+package com.itberries2018.demo.services;
 
-import com.itberries_2018.demo.models.User;
+import com.itberries2018.demo.models.User;
 
 import java.util.List;
 

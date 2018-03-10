@@ -1,4 +1,4 @@
-package com.itberries_2018.demo.models;
+package com.itberries2018.demo.models;
 
 @SuppressWarnings("unused")
 public class LoginForm {

@@ -1,9 +1,9 @@
-package com.itberries_2018.demo.controllers;
+package com.itberries2018.demo.controllers;
 
-import com.itberries_2018.demo.models.LoginForm;
-import com.itberries_2018.demo.models.User;
-import com.itberries_2018.demo.services.CustomErrorType;
-import com.itberries_2018.demo.services.UserService;
+import com.itberries2018.demo.models.LoginForm;
+import com.itberries2018.demo.models.User;
+import com.itberries2018.demo.services.CustomErrorType;
+import com.itberries2018.demo.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +67,7 @@ public class RestApiController {
 
         if (userService.isUserExist(user)) {
             LOGGER.error("Unable to create. A User with name {} already exist", user.getName());
-            return new ResponseEntity<>(new CustomErrorType(),HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new CustomErrorType(), HttpStatus.CONFLICT);
         }
         userService.saveUser(user);
 
@@ -121,7 +121,7 @@ public class RestApiController {
                     HttpStatus.NOT_FOUND);
         }
 
-        httpSession.setAttribute("online", true );
+        httpSession.setAttribute("online", true);
         httpSession.setAttribute("Id", user.getId());
 
         LOGGER.info("Setting cookie");
@@ -145,7 +145,7 @@ public class RestApiController {
                     HttpStatus.ALREADY_REPORTED);
         }
 
-        httpSession.setAttribute("online", false );
+        httpSession.setAttribute("online", false);
 
         LOGGER.info("Clearing cookie");
         final Cookie cookie = new Cookie("userId", null);
