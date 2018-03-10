@@ -9,13 +9,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class UserServiceImplementation implements UserService {
-    @SuppressWarnings("CanBeFinal")
-    private static AtomicLong counter = new AtomicLong();
 
-    @SuppressWarnings("CanBeFinal")
-    private static List<User> users;
+    private static final AtomicLong COUNTER = new AtomicLong();
 
-    static {
+
+    private  final List<User> users;
+
+    {
         users = populateDummyUsers();
     }
 
@@ -62,12 +62,12 @@ public class UserServiceImplementation implements UserService {
         return findByLogin(user.getName()) != null;
     }
 
-    private static List<User> populateDummyUsers() {
+    private  List<User> populateDummyUsers() {
         final List<User> usersData = new ArrayList<>();
-        usersData.add(new User(counter.incrementAndGet(), "user1", "user1@mail.ru", "user1"));
-        usersData.add(new User(counter.incrementAndGet(), "user2", "user2@mail.ru", "user2"));
-        usersData.add(new User(counter.incrementAndGet(), "user3", "user3@mail.ru", "user3"));
-        usersData.add(new User(counter.incrementAndGet(), "user4", "user14@mail.ru", "user4"));
+        usersData.add(new User(COUNTER.incrementAndGet(), "user1", "user1@mail.ru", "user1"));
+        usersData.add(new User(COUNTER.incrementAndGet(), "user2", "user2@mail.ru", "user2"));
+        usersData.add(new User(COUNTER.incrementAndGet(), "user3", "user3@mail.ru", "user3"));
+        usersData.add(new User(COUNTER.incrementAndGet(), "user4", "user14@mail.ru", "user4"));
         return usersData;
     }
 
