@@ -64,11 +64,28 @@ public class UserServiceImplementation implements UserService {
 
     private  List<User> populateDummyUsers() {
         final List<User> usersData = new ArrayList<>();
-        usersData.add(new User(COUNTER.incrementAndGet(), "user1", "user1@mail.ru", "user1"));
-        usersData.add(new User(COUNTER.incrementAndGet(), "user2", "user2@mail.ru", "user2"));
-        usersData.add(new User(COUNTER.incrementAndGet(), "user3", "user3@mail.ru", "user3"));
-        usersData.add(new User(COUNTER.incrementAndGet(), "user4", "user14@mail.ru", "user4"));
+        usersData.add(new User(COUNTER.incrementAndGet(), "user1", "user1@mail.ru", "user1", 10));
+        usersData.add(new User(COUNTER.incrementAndGet(), "user2", "user2@mail.ru", "user2", 20));
+        usersData.add(new User(COUNTER.incrementAndGet(), "user3", "user3@mail.ru", "user3", 50));
+        usersData.add(new User(COUNTER.incrementAndGet(), "user4", "user14@mail.ru", "user4", 100));
         return usersData;
     }
 
+    @Override
+    public List<User> makeScoreboardPage() {
+        return users;
+    }
+
+    public User makeUser(String login, String email, String password, String avatarName) {
+        return new User(COUNTER.incrementAndGet(), login, email, password, avatarName);
+    }
+
+    public User findByEmail(String email) {
+        for (User user : users) {
+            if (user.getEmail().equalsIgnoreCase(email)) {
+                return user;
+            }
+        }
+        return null;
+    }
 }

@@ -1,8 +1,8 @@
 package com.itberries2018.demo.controllers;
 
-import com.itberries2018.demo.models.LoginForm;
-import com.itberries2018.demo.models.User;
+import com.itberries2018.demo.models.*;
 import com.itberries2018.demo.services.CustomErrorType;
+import com.itberries2018.demo.services.ScoreRecordService;
 import com.itberries2018.demo.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.Cookie;
@@ -28,10 +30,21 @@ public class RestApiController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestApiController.class);
 
     private final UserService userService; //Service which will do all data retrieval/manipulation work
+    private final ScoreRecordService scoreRecordService;
 
     @Autowired
-    public RestApiController(UserService userService) {
+    public RestApiController(UserService userService, ScoreRecordService scoreRecordService) {
         this.userService = userService;
+        this.scoreRecordService = scoreRecordService;
+    }
+
+    // -------------------Check auth-----------------------------------------------------
+
+    @RequestMapping(value = "/me/", method = RequestMethod.GET)
+    public ResponseEntity<?> me(@CookieValue(value = "frontend", required = false) Cookie frontend) {
+        int id = Integer.parseInt(frontend.getValue());
+        User user = userService.findById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     // -------------------Retrieve All Users---------------------------------------------
@@ -174,6 +187,51 @@ public class RestApiController {
         }
         return new ResponseEntity<>(new CustomErrorType(),
                 HttpStatus.NOT_FOUND);
+    }
+
+    // ------------------- Get Scoreboard page ------------------------------------------------
+
+    @RequestMapping(value = "/users/scoreboard", method = RequestMethod.GET)
+    public ResponseEntity<?> scoreboard(@RequestParam("size") int size, @RequestParam("page") int page) {
+        if (page < 1) {
+            return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
+        }
+        int startPosition = (page - 1) * size;
+        List<User> users = userService.findAllUsers();
+        users.sort((o1, o2) -> o2.getScore().compareTo(o1.getScore()));
+        if (users.size() < startPosition + size) {
+            return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
+        }
+        users = users.subList(startPosition, startPosition + size);
+        List<ScoreRecord> records = scoreRecordService.converUsersToSocreRecords(users);
+        return new ResponseEntity<>(records, HttpStatus.OK);
+    }
+
+    // ------------------- Registrate a User ------------------------------------------------
+
+    @RequestMapping(value = "/registration", method = RequestMethod.POST)
+    public ResponseEntity<?> registration(MultipartHttpServletRequest request) {
+
+        String login = request.getParameter("username");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String repPassword = request.getParameter("repeat_password");
+        MultipartFile avatar = request.getFile("avatar");
+
+        if (login == null || email == null || password == null || repPassword == null || password.length() < 4
+                || !email.matches("(.*)@(.*)") || !password.equals(repPassword)) {
+            return new ResponseEntity<>(new ErrorJson("Не валидные данные пользователя"), HttpStatus.BAD_REQUEST);
+        }
+        if (userService.findByEmail(email) != null) {
+            return new ResponseEntity<>(new ErrorJson("Пользователь уже существует"), HttpStatus.CONFLICT);
+        }
+
+        String avatarName = (avatar == null) ? "noavatar.png" : avatar.getName();
+        User user = userService.makeUser(login, email, password, avatarName);
+
+        userService.saveUser(user);
+
+        return new ResponseEntity<>(new SuccessJson("Пользователь успешно зарегестрирован"), HttpStatus.CREATED);
     }
 
 }
