@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 
+@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com","http://localhost:9000" })
 @RestController
 @RequestMapping("/api")
 public class RestApiController {
