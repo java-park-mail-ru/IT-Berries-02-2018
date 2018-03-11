@@ -4,7 +4,6 @@ import com.itberries2018.demo.models.LoginForm;
 import com.itberries2018.demo.models.User;
 import com.itberries2018.demo.services.CustomErrorType;
 import com.itberries2018.demo.services.UserService;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
@@ -124,24 +121,6 @@ public class RestApiController {
 
         httpSession.invalidate();
         return "redirect:/login/";
-        // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        LOGGER.info("Trying to logOut user");
-//
-//        if (userId == null) {
-//            LOGGER.info("Already out");
-//            return new ResponseEntity<>(new CustomErrorType(),
-//                    HttpStatus.ALREADY_REPORTED);
-//        }
-//
-//        httpSession.setAttribute("online", false);
-//
-//        LOGGER.info("Clearing cookie");
-//        final Cookie cookie = new Cookie("userId", null);
-//        cookie.setPath("/api/");
-//        cookie.setMaxAge(0);
-//        response.addCookie(cookie);
-//
-        //  return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
     @RequestMapping(value = "/currentUser/", method = RequestMethod.POST)
