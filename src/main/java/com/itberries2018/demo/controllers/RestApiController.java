@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Objects;
 
 
 @CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:9000"})
@@ -63,7 +62,8 @@ public class RestApiController {
     // -------------------Create a User-------------------------------------------
 
     @RequestMapping(value = "/signUp/", method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<?> createUser(@RequestBody User user, HttpSession httpSession, UriComponentsBuilder ucBuilder) {
+
         LOGGER.info("Creating User : {}", user);
 
         if (userService.isUserExist(user)) {
@@ -101,19 +101,10 @@ public class RestApiController {
     }
 
 
-    @SuppressWarnings("MagicNumber")
     @RequestMapping(value = "/login/", method = RequestMethod.POST)
-    public ResponseEntity<?> login(@CookieValue(value = "userId", required = false) Cookie userId,
-                                   @RequestBody LoginForm loginForm, HttpServletResponse response,
+    public ResponseEntity<?> login(@RequestBody LoginForm loginForm, HttpServletResponse response,
                                    HttpSession httpSession) {
-
         LOGGER.info("Trying to login user");
-
-        if (userId != null) {
-            LOGGER.info("Already in");
-            return new ResponseEntity<>(new CustomErrorType(),
-                    HttpStatus.ALREADY_REPORTED);
-        }
 
         final User user = userService.findByLogin(loginForm.getLogin());
         if (user == null || !user.getPassword().equals(loginForm.getPassword())) {
@@ -121,15 +112,8 @@ public class RestApiController {
             return new ResponseEntity<>(new CustomErrorType(),
                     HttpStatus.NOT_FOUND);
         }
+        httpSession.setAttribute("user", user);
 
-        httpSession.setAttribute("online", true);
-        httpSession.setAttribute("Id", user.getId());
-
-        LOGGER.info("Setting cookie");
-        final Cookie cookie = new Cookie("userId", Objects.toString(user.getId()));
-        cookie.setPath("/api/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
