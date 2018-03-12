@@ -4,24 +4,56 @@ package com.itberries2018.demo.models;
 import java.util.Objects;
 
 public class User {
+
     private long id;
-    private String login;
+    private Long score;
+    private String username;
     private String email;
     private String password;
+    private String avatar;
 
-    public String getLogin() {
-        return login;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public User(long id, String login, String email, String password) {
+    public User(long id, String username, String email, String password) {
         this.id = id;
-        this.login = login;
+        this.username = username;
         this.email = email;
         this.password = password;
+        this.avatar = "noavatar.png";
+        this.score = 0L;
+    }
+
+    public User(long id, String username, String email, String password, String avatar) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.avatar = avatar;
+        this.score = 0L;
+    }
+
+    public User(long id, String username, String email, String password, long score) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.avatar = "noavatar.png";
+        this.score = score;
+    }
+
+    public User(long id, String username, String email, String password, String avatar, long score) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.avatar = avatar;
+        this.score = score;
     }
 
     public String getEmail() {
@@ -40,7 +72,6 @@ public class User {
         this.password = password;
     }
 
-
     public long getId() {
         return id;
     }
@@ -49,8 +80,24 @@ public class User {
         this.id = id;
     }
 
+    public Long getScore() {
+        return score;
+    }
+
+    public void setScore(Long score) {
+        this.score = score;
+    }
+
     public String getName() {
-        return login;
+        return username;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @Override
@@ -82,7 +129,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ",  login=" + login
-                + ", email=" + email + ']';
+        return "User [id=" + id + ",  username=" + username
+                + ", email=" + email + ",  avatar=" + avatar + ']';
     }
 }
