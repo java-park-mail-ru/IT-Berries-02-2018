@@ -12,10 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 
 @CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:9000"})
@@ -106,21 +110,34 @@ public class RestApiController {
 
         final User user = userService.findByLogin(loginForm.getLogin());
         if (user == null || !user.getPassword().equals(loginForm.getPassword())) {
-            LOGGER.error("Unable to delete. User with id {} not found.");
-            return new ResponseEntity<>(new CustomErrorType(),
-                    HttpStatus.NOT_FOUND);
+            LOGGER.error("Unable to login. User with login {} not found.", loginForm.getLogin());
+            return new ResponseEntity<>(Map.ofEntries(entry("error", "Not valid data of the user")),
+                    HttpStatus.BAD_REQUEST);
         }
         httpSession.setAttribute("user", user);
 
-        return new ResponseEntity(HttpStatus.ACCEPTED);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 
-    @RequestMapping(value = "/logOut/", method = RequestMethod.POST)
+    @RequestMapping(value = "/logout/", method = RequestMethod.PUT)
     public String logOut(HttpServletResponse response, HttpSession httpSession) {
-
         httpSession.invalidate();
         return "redirect:/login/";
+    }
+
+    @RequestMapping(value = "/me/", method = RequestMethod.GET)
+    public ResponseEntity<?> authentication(HttpServletResponse response, HttpSession httpSession) {
+        LOGGER.info("Trying to authentificate user");
+
+        final User currentUser = (User) httpSession.getAttribute("user");
+
+        if (currentUser == null) {
+            LOGGER.error("Unable to auth.");
+            return new ResponseEntity<>("The user isn't authorized",
+                    HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity(Map.ofEntries(entry("username", currentUser.getName())), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/currentUser/", method = RequestMethod.POST)
