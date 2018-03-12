@@ -278,7 +278,7 @@ public class RestApiController {
                 LOGGER.error("Неверный пароль");
                 return new ResponseEntity<>(new ErrorJson("Неверный пароль"), HttpStatus.BAD_REQUEST);
             }
-            if (newEmail != null) {
+            if (newEmail != null && !newEmail.equals(currentUser.getEmail())) {
                 if (!newEmail.matches("(.*)@(.*)")) {
                     LOGGER.error("Не валидный email");
                     return new ResponseEntity<>(new ErrorJson("Не валидный email"), HttpStatus.BAD_REQUEST);
