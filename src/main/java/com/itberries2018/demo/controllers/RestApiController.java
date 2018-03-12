@@ -24,7 +24,7 @@ import static java.util.Map.entry;
 
 @CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:9000"})
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 public class RestApiController {
     @SuppressWarnings("WeakerAccess")
     private static final Logger LOGGER = LoggerFactory.getLogger(RestApiController.class);
@@ -158,6 +158,12 @@ public class RestApiController {
         }
         return new ResponseEntity<>(new CustomErrorType(),
                 HttpStatus.NOT_FOUND);
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public ResponseEntity<?> home() {
+
+        return new ResponseEntity<>("Welcome!", HttpStatus.OK);
     }
 
 }
