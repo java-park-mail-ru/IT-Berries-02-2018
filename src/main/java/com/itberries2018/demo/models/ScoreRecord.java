@@ -8,7 +8,7 @@ public class ScoreRecord  {
 
     public ScoreRecord(User user) {
         this.id = user.getId();
-        this.username = user.getLogin();
+        this.username = user.getUsername();
         this.score = user.getScore();
     }
 

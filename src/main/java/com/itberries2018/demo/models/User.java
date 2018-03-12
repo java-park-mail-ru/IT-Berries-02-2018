@@ -7,49 +7,49 @@ public class User {
 
     private long id;
     private Long score;
-    private String login;
+    private String username;
     private String email;
     private String password;
     private String avatar;
 
-    public String getLogin() {
-        return login;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public User(long id, String login, String email, String password) {
+    public User(long id, String username, String email, String password) {
         this.id = id;
-        this.login = login;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
-        this.score = new Long(0);
+        this.score = 0L;
     }
 
-    public User(long id, String login, String email, String password, String avatar) {
+    public User(long id, String username, String email, String password, String avatar) {
         this.id = id;
-        this.login = login;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = avatar;
-        this.score = new Long(0);
+        this.score = 0L;
     }
 
-    public User(long id, String login, String email, String password, long score) {
+    public User(long id, String username, String email, String password, long score) {
         this.id = id;
-        this.login = login;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
         this.score = score;
     }
 
-    public User(long id, String login, String email, String password, String avatar, long score) {
+    public User(long id, String username, String email, String password, String avatar, long score) {
         this.id = id;
-        this.login = login;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = avatar;
@@ -89,7 +89,7 @@ public class User {
     }
 
     public String getName() {
-        return login;
+        return username;
     }
 
     public String getAvatar() {
@@ -129,7 +129,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ",  username=" + login
+        return "User [id=" + id + ",  username=" + username
                 + ", email=" + email + ",  avatar=" + avatar + ']';
     }
 }

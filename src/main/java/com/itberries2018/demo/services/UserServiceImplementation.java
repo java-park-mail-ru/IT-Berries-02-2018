@@ -62,6 +62,7 @@ public class UserServiceImplementation implements UserService {
         return findByLogin(user.getName()) != null;
     }
 
+    @SuppressWarnings("MagicNumber")
     private  List<User> populateDummyUsers() {
         final List<User> usersData = new ArrayList<>();
         usersData.add(new User(COUNTER.incrementAndGet(), "user1", "user1@mail.ru", "user1", 10));
@@ -77,7 +78,7 @@ public class UserServiceImplementation implements UserService {
     }
 
     public User makeUser(String login, String email, String password, String avatarName) {
-        return new User(COUNTER.incrementAndGet(), login, email, password, avatarName);
+        return new User(COUNTER.incrementAndGet(), login, email, password, avatarName, 1);
     }
 
     public User findByEmail(String email) {

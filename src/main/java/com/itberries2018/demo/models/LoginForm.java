@@ -3,7 +3,7 @@ package com.itberries2018.demo.models;
 @SuppressWarnings("unused")
 public class LoginForm {
 
-    private String login;
+    private String email;
     private String password;
 
     public String getPassword() {
@@ -14,16 +14,16 @@ public class LoginForm {
         this.password = password;
     }
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public LoginForm(String login, String password) {
-        this.login = login;
+    public LoginForm(String emal, String password) {
+        this.email = emal;
         this.password = password;
     }
 
