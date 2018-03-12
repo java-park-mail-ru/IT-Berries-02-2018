@@ -15,16 +15,18 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 
+@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:9000"})
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 public class RestApiController {
     @SuppressWarnings("WeakerAccess")
     private static final Logger LOGGER = LoggerFactory.getLogger(RestApiController.class);
@@ -36,15 +38,6 @@ public class RestApiController {
     public RestApiController(UserService userService, ScoreRecordService scoreRecordService) {
         this.userService = userService;
         this.scoreRecordService = scoreRecordService;
-    }
-
-    // -------------------Check auth-----------------------------------------------------
-
-    @RequestMapping(value = "/me/", method = RequestMethod.GET)
-    public ResponseEntity<?> me(@CookieValue(value = "frontend", required = false) Cookie frontend) {
-        int id = Integer.parseInt(frontend.getValue());
-        User user = userService.findById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     // -------------------Retrieve All Users---------------------------------------------
@@ -75,7 +68,8 @@ public class RestApiController {
     // -------------------Create a User-------------------------------------------
 
     @RequestMapping(value = "/signUp/", method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<?> createUser(@RequestBody User user, HttpSession httpSession, UriComponentsBuilder ucBuilder) {
+
         LOGGER.info("Creating User : {}", user);
 
         if (userService.isUserExist(user)) {
@@ -113,60 +107,43 @@ public class RestApiController {
     }
 
 
-    @SuppressWarnings("MagicNumber")
     @RequestMapping(value = "/login/", method = RequestMethod.POST)
-    public ResponseEntity<?> login(@CookieValue(value = "userId", required = false) Cookie userId,
-                                   @RequestBody LoginForm loginForm, HttpServletResponse response,
+    public ResponseEntity<?> login(@RequestBody LoginForm loginForm, HttpServletResponse response,
                                    HttpSession httpSession) {
-
         LOGGER.info("Trying to login user");
-
-        if (userId != null) {
-            LOGGER.info("Already in");
-            return new ResponseEntity<>(new CustomErrorType(),
-                    HttpStatus.ALREADY_REPORTED);
-        }
 
         final User user = userService.findByLogin(loginForm.getLogin());
         if (user == null || !user.getPassword().equals(loginForm.getPassword())) {
-            LOGGER.error("Unable to delete. User with id {} not found.");
-            return new ResponseEntity<>(new CustomErrorType(),
-                    HttpStatus.NOT_FOUND);
+            LOGGER.error("Unable to login. User with login {} not found.", loginForm.getLogin());
+            return new ResponseEntity<>(Map.ofEntries(entry("error", "Not valid data of the user")),
+                    HttpStatus.BAD_REQUEST);
         }
+        httpSession.setAttribute("user", user);
 
-        httpSession.setAttribute("online", true);
-        httpSession.setAttribute("Id", user.getId());
-
-        LOGGER.info("Setting cookie");
-        final Cookie cookie = new Cookie("userId", Objects.toString(user.getId()));
-        cookie.setPath("/api/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
-        return new ResponseEntity(HttpStatus.ACCEPTED);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 
-    @RequestMapping(value = "/logOut/", method = RequestMethod.POST)
-    public ResponseEntity<?> logOut(@CookieValue(value = "userId", required = false) Cookie userId, HttpServletResponse response,
-                                    HttpSession httpSession) {
+    @RequestMapping(value = "/logout/", method = RequestMethod.PUT)
+    public String logOut(HttpServletResponse response, HttpSession httpSession) {
+        httpSession.invalidate();
+        return "redirect:/login/";
+    }
 
-        LOGGER.info("Trying to logOut user");
+    // -------------------Check auth-----------------------------------------------------
 
-        if (userId == null) {
-            LOGGER.info("Already out");
-            return new ResponseEntity<>(new CustomErrorType(),
-                    HttpStatus.ALREADY_REPORTED);
+    @RequestMapping(value = "/me/", method = RequestMethod.GET)
+    public ResponseEntity<?> authentication(HttpServletResponse response, HttpSession httpSession) {
+        LOGGER.info("Trying to authentificate user");
+
+        final User currentUser = (User) httpSession.getAttribute("user");
+
+        if (currentUser == null) {
+            LOGGER.error("Unable to auth.");
+            return new ResponseEntity<>("The user isn't authorized",
+                    HttpStatus.UNAUTHORIZED);
         }
-
-        httpSession.setAttribute("online", false);
-
-        LOGGER.info("Clearing cookie");
-        final Cookie cookie = new Cookie("userId", null);
-        cookie.setPath("/api/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-
-        return new ResponseEntity(HttpStatus.ACCEPTED);
+        return new ResponseEntity(Map.ofEntries(entry("username", currentUser.getName())), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/currentUser/", method = RequestMethod.POST)
@@ -232,6 +209,12 @@ public class RestApiController {
         userService.saveUser(user);
 
         return new ResponseEntity<>(new SuccessJson("Пользователь успешно зарегестрирован"), HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public ResponseEntity<?> home() {
+
+        return new ResponseEntity<>("Welcome!", HttpStatus.OK);
     }
 
 }
