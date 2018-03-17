@@ -1,7 +1,6 @@
 package com.itberries2018.demo.controllers;
 
 import com.itberries2018.demo.models.*;
-import com.itberries2018.demo.services.CustomErrorType;
 import com.itberries2018.demo.services.ScoreRecordService;
 import com.itberries2018.demo.services.UserService;
 import org.slf4j.Logger;
@@ -40,7 +39,6 @@ public class RestApiController {
         this.scoreRecordService = scoreRecordService;
     }
 
-    // -------------------Retrieve All Users---------------------------------------------
 
     @RequestMapping(value = "/users/", method = RequestMethod.GET)
     public ResponseEntity<List<User>> listAllUsers() {
@@ -52,7 +50,6 @@ public class RestApiController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // -------------------Retrieve Single User------------------------------------------
 
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getUser(@PathVariable("id") long id) {
@@ -60,12 +57,11 @@ public class RestApiController {
         final User user = userService.findById(id);
         if (user == null) {
             LOGGER.error("User with id {} not found.", id);
-            return new ResponseEntity<>(new CustomErrorType(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    // -------------------Create a User-------------------------------------------
 
     @RequestMapping(value = "/signUp/", method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody User user, HttpSession httpSession, UriComponentsBuilder ucBuilder) {
@@ -74,7 +70,7 @@ public class RestApiController {
 
         if (userService.isUserExist(user)) {
             LOGGER.error("Unable to create. A User with name {} already exist", user.getName());
-            return new ResponseEntity<>(new CustomErrorType(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         userService.saveUser(user);
 
@@ -83,7 +79,6 @@ public class RestApiController {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
-    // ------------------- Update a User ------------------------------------------------
 
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) {
@@ -93,8 +88,7 @@ public class RestApiController {
 
         if (currentUser == null) {
             LOGGER.error("Unable to update. User with id {} not found.", id);
-            return new ResponseEntity<>(new CustomErrorType(),
-                    HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         currentUser.setUsername(user.getUsername());
@@ -119,12 +113,10 @@ public class RestApiController {
                     final User user = userService.findById(id);
                     return new ResponseEntity<>(user, HttpStatus.OK);
                 }
-                return new ResponseEntity<>(new CustomErrorType(),
-                        HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }
-        return new ResponseEntity<>(new CustomErrorType(),
-                HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -184,7 +176,6 @@ public class RestApiController {
         return new ResponseEntity<>(new SuccessJson("Пользователь успешно зарегестрирован"), HttpStatus.CREATED);
     }
 
-    // -------------------Check auth-----------------------------------------------------
 
     @RequestMapping(value = "/me", method = RequestMethod.GET)
     public ResponseEntity<?> authentication(HttpServletResponse response, HttpSession httpSession) {
@@ -204,7 +195,6 @@ public class RestApiController {
         return new ResponseEntity<>(Map.ofEntries(entry("username", currentUser.getName())), HttpStatus.OK);
     }
 
-    // ------------------- Get Scoreboard page ------------------------------------------------
 
     @RequestMapping(value = "/users/scoreboard", method = RequestMethod.GET)
     public ResponseEntity<?> scoreboard(@RequestParam("listSize") String ssize,
@@ -245,8 +235,6 @@ public class RestApiController {
         return "redirect:/login/";
     }
 
-    // ------------------- Change User Data ------------------------------------------------
-
     @RequestMapping(value = "/me/profile", method = RequestMethod.POST)
     public ResponseEntity<?> meProfile(MultipartHttpServletRequest request, HttpSession httpSession, HttpServletResponse response) {
 
@@ -273,7 +261,7 @@ public class RestApiController {
                 || (newLogin != null && !newLogin.equals(currentUser.getUsername()) && !newLogin.equals(""))
                 || (newPassword != null && !newPassword.equals(currentUser.getPassword()) && !newPassword.equals(""))
                 || (newPasswordRepeat != null && !newPasswordRepeat.equals(currentUser.getPassword())
-                        && !newPasswordRepeat.equals(""))) {
+                && !newPasswordRepeat.equals(""))) {
             if (password == null || !password.equals(currentUser.getPassword())) {
                 LOGGER.error("Неверный пароль");
                 return new ResponseEntity<>(new ErrorJson("Неверный пароль"), HttpStatus.BAD_REQUEST);
@@ -338,7 +326,5 @@ public class RestApiController {
 
         return new ResponseEntity<>("Welcome!", HttpStatus.OK);
     }
-
-    // ------------------- check auth ------------------------------------------------
 }
 

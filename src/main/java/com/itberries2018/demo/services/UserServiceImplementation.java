@@ -46,8 +46,6 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public void saveUser(User user) {
-        //user.setId(counter.incrementAndGet());
-        user.setId(user.getId());
         users.add(user);
     }
 
