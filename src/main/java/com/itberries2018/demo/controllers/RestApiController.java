@@ -45,14 +45,13 @@ public class RestApiController {
         final List<User> users = userService.findAllUsers();
         if (users.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            // You many decide to return HttpStatus.NOT_FOUND
         }
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUser(@PathVariable("id") long id) {
+    public ResponseEntity<User> getUser(@PathVariable("id") long id) {
         LOGGER.info("Fetching User with id {}", id);
         final User user = userService.findById(id);
         if (user == null) {
@@ -154,16 +153,30 @@ public class RestApiController {
         response.addHeader("Access-Control-Allow-Credentials", "true");
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 
-        if (login == null || email == null || password == null || repPassword == null || password.length() < 4
-                || !email.matches("(.*)@(.*)") || !password.equals(repPassword)) {
-            return new ResponseEntity<>(new ErrorJson("Не валидные данные пользователя"), HttpStatus.BAD_REQUEST);
+
+
+        if(login == null ){
+            return new ResponseEntity<>(new ErrorJson("Укажите  корректный логин!"), HttpStatus.BAD_REQUEST);
+        }else{
+            if(email == null || !email.matches("(.*)@(.*)")){
+                return new ResponseEntity<>(new ErrorJson("Укажите корректный emal!"), HttpStatus.BAD_REQUEST);
+            }else{
+                if(password == null  || password.length() < 4){
+                    return new ResponseEntity<>(new ErrorJson("Поле password должно содержать более 4 знаков!"), HttpStatus.BAD_REQUEST);
+                }else{
+                    if (repPassword == null || !password.equals(repPassword)){
+                        return new ResponseEntity<>(new ErrorJson("Повторите пароль корректно!"), HttpStatus.BAD_REQUEST);
+                    }
+                }
+            }
         }
+
         if (userService.findByEmail(email) != null) {
             return new ResponseEntity<>(new ErrorJson("Пользователь уже существует"), HttpStatus.CONFLICT);
         }
 
         final String avatarName;
-        if (avatar == null || avatar.getOriginalFilename().equals("")) {
+        if (avatar.getOriginalFilename().equals("")) {
             avatarName = "noavatar.png";
         } else {
             avatarName = avatar.getOriginalFilename();
@@ -227,12 +240,13 @@ public class RestApiController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String logOut(HttpServletResponse response, HttpSession httpSession) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
         response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
         response.addHeader("Access-Control-Allow-Credentials", "true");
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
-        return "redirect:/login/";
+
     }
 
     @RequestMapping(value = "/me/profile", method = RequestMethod.POST)
@@ -257,11 +271,14 @@ public class RestApiController {
         final String newPasswordRepeat = request.getParameter("new_password_repeat");
         final MultipartFile avatar = request.getFile("avatar");
 
+
+        if(currentUser.getPassword() != password){
+            return new ResponseEntity<>("Wrong current password!",
+                    HttpStatus.UNAUTHORIZED);
+        }
         if ((newEmail != null && !newEmail.equals(currentUser.getEmail()) && !newEmail.equals(""))
                 || (newLogin != null && !newLogin.equals(currentUser.getUsername()) && !newLogin.equals(""))
-                || (newPassword != null && !newPassword.equals(currentUser.getPassword()) && !newPassword.equals(""))
-                || (newPasswordRepeat != null && !newPasswordRepeat.equals(currentUser.getPassword())
-                && !newPasswordRepeat.equals(""))) {
+                || (newPassword != null && !newPassword.equals(currentUser.getPassword()) && !newPassword.equals(""))) {
             if (password == null || !password.equals(currentUser.getPassword())) {
                 LOGGER.error("Неверный пароль");
                 return new ResponseEntity<>(new ErrorJson("Неверный пароль"), HttpStatus.BAD_REQUEST);
@@ -323,7 +340,6 @@ public class RestApiController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<?> home() {
-
         return new ResponseEntity<>("Welcome!", HttpStatus.OK);
     }
 }

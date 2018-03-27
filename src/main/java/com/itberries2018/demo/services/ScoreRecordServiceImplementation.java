@@ -12,7 +12,7 @@ public class ScoreRecordServiceImplementation implements ScoreRecordService {
 
     @Override
     public List<ScoreRecord> converUsersToSocreRecords(List<User> users) {
-        final List<ScoreRecord> records = new ArrayList<ScoreRecord>();
+        final List<ScoreRecord> records = new ArrayList<>();
         for (User user : users) {
             records.add(new ScoreRecord(user));
         }
