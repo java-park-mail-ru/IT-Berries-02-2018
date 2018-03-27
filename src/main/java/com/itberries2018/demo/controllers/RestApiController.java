@@ -23,7 +23,6 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 
-@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8081"})
 @RestController
 @RequestMapping("/")
 public class RestApiController {
@@ -154,17 +153,16 @@ public class RestApiController {
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 
 
-
-        if(login == null ){
+        if (login == null) {
             return new ResponseEntity<>(new ErrorJson("Укажите  корректный логин!"), HttpStatus.BAD_REQUEST);
-        }else{
-            if(email == null || !email.matches("(.*)@(.*)")){
+        } else {
+            if (email == null || !email.matches("(.*)@(.*)")) {
                 return new ResponseEntity<>(new ErrorJson("Укажите корректный emal!"), HttpStatus.BAD_REQUEST);
-            }else{
-                if(password == null  || password.length() < 4){
+            } else {
+                if (password == null || password.length() < 4) {
                     return new ResponseEntity<>(new ErrorJson("Поле password должно содержать более 4 знаков!"), HttpStatus.BAD_REQUEST);
-                }else{
-                    if (repPassword == null || !password.equals(repPassword)){
+                } else {
+                    if (repPassword == null || !password.equals(repPassword)) {
                         return new ResponseEntity<>(new ErrorJson("Повторите пароль корректно!"), HttpStatus.BAD_REQUEST);
                     }
                 }
@@ -272,7 +270,7 @@ public class RestApiController {
         final MultipartFile avatar = request.getFile("avatar");
 
 
-        if(currentUser.getPassword() != password){
+        if (currentUser.getPassword() != password) {
             return new ResponseEntity<>("Wrong current password!",
                     HttpStatus.UNAUTHORIZED);
         }
