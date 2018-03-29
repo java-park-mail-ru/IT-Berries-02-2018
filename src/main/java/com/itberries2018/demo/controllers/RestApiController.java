@@ -25,6 +25,7 @@ import static java.util.Map.entry;
 
 @RestController
 @RequestMapping("/")
+@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8081"})
 public class RestApiController {
     @SuppressWarnings("WeakerAccess")
     private static final Logger LOGGER = LoggerFactory.getLogger(RestApiController.class);
@@ -122,9 +123,6 @@ public class RestApiController {
                                    HttpSession httpSession) {
         LOGGER.info("Trying to login user");
 
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 
         final LoginForm loginForm = new LoginForm(request.getParameter("email"), request.getParameter("password"));
 
@@ -148,9 +146,6 @@ public class RestApiController {
         final String repPassword = request.getParameter("password_repeat");
         final MultipartFile avatar = request.getFile("avatar");
 
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 
 
         if (login == null) {
@@ -193,9 +188,7 @@ public class RestApiController {
         LOGGER.info("Trying to authentificate user");
 
         final User currentUser = (User) httpSession.getAttribute("user");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+
 
         if (currentUser == null) {
             LOGGER.error("Unable to auth.");
@@ -214,9 +207,6 @@ public class RestApiController {
         final int page = Integer.parseInt(spage);
         final int size = Integer.parseInt(ssize);
 
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 
         if (page < 1) {
             return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
@@ -241,9 +231,6 @@ public class RestApiController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 
     }
 
@@ -252,9 +239,7 @@ public class RestApiController {
 
         final User currentUser = (User) httpSession.getAttribute("user");
 
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+
 
         if (currentUser == null) {
             LOGGER.error("Unable to auth.");
@@ -323,9 +308,6 @@ public class RestApiController {
         LOGGER.info("Trying to authentificate user");
 
         final User currentUser = (User) httpSession.getAttribute("user");
-        response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 
         if (currentUser == null) {
             LOGGER.error("Unable to auth.");
