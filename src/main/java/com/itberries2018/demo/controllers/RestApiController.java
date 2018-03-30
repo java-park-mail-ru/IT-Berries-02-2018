@@ -25,7 +25,10 @@ import static java.util.Map.entry;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8081"})
+@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8081"},
+        allowCredentials = "true", allowedHeaders = {"origin", "content-type", "accept", "authorization"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+                RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.HEAD})
 public class RestApiController {
     @SuppressWarnings("WeakerAccess")
     private static final Logger LOGGER = LoggerFactory.getLogger(RestApiController.class);
@@ -147,7 +150,6 @@ public class RestApiController {
         final MultipartFile avatar = request.getFile("avatar");
 
 
-
         if (login == null) {
             return new ResponseEntity<>(new ErrorJson("Укажите  корректный логин!"), HttpStatus.BAD_REQUEST);
         } else {
@@ -227,7 +229,7 @@ public class RestApiController {
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET) //
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
@@ -238,7 +240,6 @@ public class RestApiController {
     public ResponseEntity<?> meProfile(MultipartHttpServletRequest request, HttpSession httpSession, HttpServletResponse response) {
 
         final User currentUser = (User) httpSession.getAttribute("user");
-
 
 
         if (currentUser == null) {
