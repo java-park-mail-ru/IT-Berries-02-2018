@@ -1,4 +1,4 @@
-package com.itberries2018.demo.services;
+package com.itberries2018.demo.servicesIntefaces;
 
 import com.itberries2018.demo.models.User;
 import com.itberries2018.demo.models.ScoreRecord;

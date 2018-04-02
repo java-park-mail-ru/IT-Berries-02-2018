@@ -1,7 +1,9 @@
-package com.itberries2018.demo.services;
+package com.itberries2018.demo.servicesImpl;
 
 import com.itberries2018.demo.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.itberries2018.demo.servicesIntefaces.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,26 +14,27 @@ public class UserServiceImplementation implements UserService {
 
     private static final AtomicLong COUNTER = new AtomicLong();
 
+    @Autowired
+    private UserServiceJpaDao userServiceJpaDao;
 
     private  final List<User> users;
-
     {
         users = populateDummyUsers();
     }
 
     @Override
     public List<User> findAllUsers() {
-        return users;
+        return userServiceJpaDao.getAll();
     }
 
     @Override
     public User findById(long id) {
-        for (User user : users) {
-            if (user.getId() == id) {
-                return user;
-            }
+        User user = userServiceJpaDao.getById(id);
+        if (user!= null){
+            return user;
+        }else{
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -46,7 +49,9 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public void saveUser(User user) {
-        users.add(user);
+
+        //users.add(user);
+        userServiceJpaDao.add( user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
     }
 
     @Override
@@ -57,7 +62,7 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public boolean isUserExist(User user) {
-        return findByLogin(user.getName()) != null;
+        return userServiceJpaDao.isUserExist(user);
     }
 
     @SuppressWarnings("MagicNumber")
@@ -76,6 +81,7 @@ public class UserServiceImplementation implements UserService {
     }
 
     public User makeUser(String login, String email, String password, String avatarName) {
+
         return new User(COUNTER.incrementAndGet(), login, email, password, avatarName, 1);
     }
 

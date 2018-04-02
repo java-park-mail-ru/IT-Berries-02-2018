@@ -1,8 +1,6 @@
 package com.itberries2018.demo.controllers;
 
 import com.itberries2018.demo.models.*;
-import com.itberries2018.demo.services.ScoreRecordService;
-import com.itberries2018.demo.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.UriComponentsBuilder;
+import com.itberries2018.demo.servicesIntefaces.ScoreRecordService;
+import com.itberries2018.demo.servicesIntefaces.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -25,15 +25,16 @@ import static java.util.Map.entry;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8081"},
+@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8080"},
         allowCredentials = "true", allowedHeaders = {"origin", "content-type", "accept", "authorization"},
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
                 RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.HEAD})
 public class RestApiController {
-    @SuppressWarnings("WeakerAccess")
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestApiController.class);
 
-    private final UserService userService; //Service which will do all data retrieval/manipulation work
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestApiController.class);
+    @Autowired
+    private final UserService userService;
+    @Autowired
     private final ScoreRecordService scoreRecordService;
 
     @Autowired
@@ -41,6 +42,8 @@ public class RestApiController {
         this.userService = userService;
         this.scoreRecordService = scoreRecordService;
     }
+
+
 
 
     @RequestMapping(value = "/users/", method = RequestMethod.GET)
@@ -75,9 +78,9 @@ public class RestApiController {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         userService.saveUser(user);
-
+        //userServiceJpaDao.add(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
         final HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(ucBuilder.path("/api/user/{id}").buildAndExpand(user.getId()).toUri());
+        //headers.setLocation(ucBuilder.path("/api/user/{id}").buildAndExpand(user.getId()).toUri());
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
@@ -87,7 +90,7 @@ public class RestApiController {
         LOGGER.info("Updating User with id {}", id);
 
         final User currentUser = userService.findById(id);
-
+        //final User currentUser = userServiceJpaDao.getById(id);
         if (currentUser == null) {
             LOGGER.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

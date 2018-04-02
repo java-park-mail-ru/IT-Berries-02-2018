@@ -1,16 +1,32 @@
 package com.itberries2018.demo.models;
-
-
 import java.util.Objects;
+import javax.persistence.*;
 
+@Entity
+@Table(name="users_" )
 public class User {
+    @Id
+    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private long id;
     private Long score;
+
+    @Column(name="user_name")
     private String username;
+
+    @Column(name="email")
     private String email;
+
+    @Column(name="password")
     private String password;
+
+    @Column(name="avatar")
     private String avatar;
+
+    public User(){
+
+    }
 
     public String getUsername() {
         return username;
@@ -129,7 +145,13 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ",  username=" + username
-                + ", email=" + email + ",  avatar=" + avatar + ']';
+        return "User{" +
+                "id=" + id +
+                ", score=" + score +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", avatar='" + avatar + '\'' +
+                '}';
     }
 }

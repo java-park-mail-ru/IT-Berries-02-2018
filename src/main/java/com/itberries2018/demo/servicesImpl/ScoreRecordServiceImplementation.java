@@ -1,8 +1,9 @@
-package com.itberries2018.demo.services;
+package com.itberries2018.demo.servicesImpl;
 
 import com.itberries2018.demo.models.ScoreRecord;
 import com.itberries2018.demo.models.User;
 import org.springframework.stereotype.Service;
+import com.itberries2018.demo.servicesIntefaces.ScoreRecordService;
 
 import java.util.ArrayList;
 import java.util.List;
