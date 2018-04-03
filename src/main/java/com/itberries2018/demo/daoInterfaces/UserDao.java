@@ -1,6 +1,6 @@
 package com.itberries2018.demo.daoInterfaces;
 
-import com.itberries2018.demo.models.User;
+import com.itberries2018.demo.Entities.User;
 
 import java.util.List;
 
@@ -16,13 +16,16 @@ public interface UserDao {
     //update Password
     void updatePassword(Long id, String newPassword);
 
-    //update Password
+    //update
     void updateAvatar(Long id, String avatar);
 
+    void updateUser(User user);
     //delete
     void remove(User id);
 
     boolean isUserExist(User user);
+
+    User findByEmail(String email);
 
     class DuplicateUserException extends RuntimeException {
         public DuplicateUserException(String email, Throwable cause) {

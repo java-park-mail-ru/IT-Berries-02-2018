@@ -1,19 +1,21 @@
 package com.itberries2018.demo.daoInterfaces;
 
-import com.itberries2018.demo.models.History;
+import com.itberries2018.demo.Entities.History;
+import com.itberries2018.demo.Entities.User;
 
-import java.sql.Date;
 import java.util.List;
 
 public interface HistoryDao {
     //create
-    History add(Long id_history, Date date_result, int score, Long user_id);
+    History add(String date_result, int score, User user);
 
     //read
     List<History> getAll();
 
     //read sorted data
-    List<History> getSortedData();
+    List <Object[]> getSortedData();
+
+
 
     int getTheBestScoreForTheUser(Long user_id);
 

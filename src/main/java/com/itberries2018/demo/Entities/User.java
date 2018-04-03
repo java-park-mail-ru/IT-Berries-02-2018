@@ -1,4 +1,4 @@
-package com.itberries2018.demo.models;
+package com.itberries2018.demo.Entities;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -9,8 +9,6 @@ public class User {
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Long score;
 
     @Column(name="user_name")
     private String username;
@@ -42,7 +40,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
-        this.score = 0L;
     }
 
     public User(long id, String username, String email, String password, String avatar) {
@@ -51,7 +48,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.avatar = avatar;
-        this.score = 0L;
     }
 
     public User(long id, String username, String email, String password, long score) {
@@ -60,7 +56,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
-        this.score = score;
     }
 
     public User(long id, String username, String email, String password, String avatar, long score) {
@@ -69,7 +64,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.avatar = avatar;
-        this.score = score;
     }
 
     public String getEmail() {
@@ -94,14 +88,6 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Long getScore() {
-        return score;
-    }
-
-    public void setScore(Long score) {
-        this.score = score;
     }
 
     public String getName() {
@@ -147,7 +133,6 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", score=" + score +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +

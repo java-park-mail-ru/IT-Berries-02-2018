@@ -1,4 +1,4 @@
-package com.itberries2018.demo.models;
+package com.itberries2018.demo.Entities;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -15,8 +15,9 @@ public class History {
     @Column(name="score")
     private Integer score;
 
-    @Column(name="user_id")
-    private Long user_id;
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name="user_id")
+    private User user;
 
     @Column(name="date_result")
     private Date date_result;
@@ -41,12 +42,12 @@ public class History {
         this.score = score;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public User getUser_id() {
+        return user;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUser_id(User user) {
+        this.user = user;
     }
 
     public Date getDate_result() {
@@ -64,14 +65,14 @@ public class History {
         History history = (History) o;
         return Objects.equals(id_history, history.id_history) &&
                 Objects.equals(score, history.score) &&
-                Objects.equals(user_id, history.user_id) &&
+                Objects.equals(user, history.user) &&
                 Objects.equals(date_result, history.date_result);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id_history, score, user_id, date_result);
+        return Objects.hash(id_history, score, user, date_result);
     }
 
     @Override
@@ -79,8 +80,8 @@ public class History {
         return "History{" +
                 "id_history=" + id_history +
                 ", score=" + score +
-                ", user_id=" + user_id +
-                ", date_result='" + date_result + '\'' +
+                ", user=" + user +
+                ", date_result=" + date_result +
                 '}';
     }
 }

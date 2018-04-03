@@ -1,6 +1,6 @@
 package com.itberries2018.demo.servicesImpl;
 
-import com.itberries2018.demo.models.User;
+import com.itberries2018.demo.Entities.User;
 import com.itberries2018.demo.daoInterfaces.UserDao;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
@@ -67,6 +67,17 @@ public class UserServiceJpaDao implements UserDao {
     }
 
     @Override
+    public void updateUser(User user) {
+       Query query = em.createQuery("UPDATE User u SET u.password=:password, u.email=:email, u.avatar=:avatar where u.username=:username")
+                .setParameter("email", user.getEmail())
+                .setParameter("password",user.getPassword())
+                .setParameter("avatar", user.getAvatar())
+                .setParameter("username", user.getUsername());
+       query.executeUpdate();
+
+    }
+
+    @Override
     public void remove(User user) {
         remove(user);
     }
@@ -81,5 +92,17 @@ public class UserServiceJpaDao implements UserDao {
             return  true;
         else
             return false;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        Query q = em.createQuery("SELECT c FROM User c where c.email=:user_email", User.class);
+        q.setParameter("user_email", email);
+        List<User> lst = q.getResultList();
+        System.out.println(lst.toString());
+        if(lst.size()>0)
+            return  lst.get(0);
+        else
+            return null;
     }
 }

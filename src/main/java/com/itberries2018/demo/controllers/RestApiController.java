@@ -1,5 +1,7 @@
 package com.itberries2018.demo.controllers;
 
+import com.itberries2018.demo.Entities.History;
+import com.itberries2018.demo.Entities.User;
 import com.itberries2018.demo.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ import static java.util.Map.entry;
 @RestController
 @RequestMapping("/")
 @CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8080"},
-        allowCredentials = "true", allowedHeaders = {"origin", "content-type", "accept", "authorization"},
+        allowCredentials = "true", allowedHeaders = {"origin", "content-type", "accept", "authorization", "multipart/form-data"},
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
                 RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.HEAD})
 public class RestApiController {
@@ -124,7 +126,7 @@ public class RestApiController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login",  method = RequestMethod.POST)
     public ResponseEntity<?> login(MultipartHttpServletRequest request, HttpServletResponse response,
                                    HttpSession httpSession) {
         LOGGER.info("Trying to login user");
@@ -150,8 +152,8 @@ public class RestApiController {
         final String email = request.getParameter("email");
         final String password = request.getParameter("password");
         final String repPassword = request.getParameter("password_repeat");
-        final MultipartFile avatar = request.getFile("avatar");
-
+        //final MultipartFile avatar = request.getFile("avatar");
+        final String avatar = request.getParameter("avatar");
 
         if (login == null) {
             return new ResponseEntity<>(new ErrorJson("Укажите  корректный логин!"), HttpStatus.BAD_REQUEST);
@@ -174,13 +176,18 @@ public class RestApiController {
         }
 
         final String avatarName;
-        if (avatar.getOriginalFilename().equals("")) {
+        if (avatar.equals("")) {
             avatarName = "noavatar.png";
         } else {
-            avatarName = avatar.getOriginalFilename();
+            avatarName = avatar;
         }
-        final User user = userService.makeUser(login, email, password, avatarName);
+        //final User user = userService.makeUser(login, email, password, avatarName);
 
+        final User user = new  User();
+        user.setAvatar(avatarName);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setUsername(login);
         userService.saveUser(user);
         httpSession.setAttribute("user", user);
 
@@ -194,7 +201,6 @@ public class RestApiController {
 
         final User currentUser = (User) httpSession.getAttribute("user");
 
-
         if (currentUser == null) {
             LOGGER.error("Unable to auth.");
             return new ResponseEntity<>("The user isn't authorized",
@@ -202,6 +208,24 @@ public class RestApiController {
         }
 
         return new ResponseEntity<>(Map.ofEntries(entry("username", currentUser.getName())), HttpStatus.OK);
+    }
+
+    @RequestMapping(value="/score", method = RequestMethod.POST)
+    public ResponseEntity<?>setUserScore(MultipartHttpServletRequest request, HttpServletResponse httpServletResponse, HttpSession httpSession){
+        LOGGER.info("Trying to set score for the user");
+        final User currentUser = (User) httpSession.getAttribute("user");
+        if (currentUser == null) {
+            LOGGER.error("Unable to auth.");
+            return new ResponseEntity<>("The user isn't authorized",
+                    HttpStatus.UNAUTHORIZED);
+        }
+
+        String dateWin = request.getParameter("dateResult");
+        int score = Integer.parseInt(request.getParameter("score"));
+
+        userService.saveHistoryNote(dateWin, score, currentUser);
+
+        return new ResponseEntity<>("Insert score for user"+currentUser.getUsername(), HttpStatus.OK);
     }
 
 
@@ -217,26 +241,32 @@ public class RestApiController {
             return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
         }
         final int startPosition = (page - 1) * size;
-        List<User> users = userService.findAllUsers();
-        users.sort((o1, o2) -> o2.getScore().compareTo(o1.getScore()));
-        for (int i = 0; i < users.size(); ++i) {
-            users.get(i).setId(i);
+        List<Object []> results = userService.findAllUsersForScoreBoard();
+
+        for(Object[] historyAndUserNotes: results){
+            History entityHist = (History) historyAndUserNotes[0];
+            User entityUser = (User)historyAndUserNotes[1];
+            System.out.println(entityHist);
+            System.out.println(entityUser);
         }
-        if (users.size() < startPosition + size) {
+
+        if (results.size() < startPosition + size) {
             return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
         }
-        users = users.subList(startPosition, startPosition + size);
-        final List<ScoreRecord> records = scoreRecordService.converUsersToSocreRecords(users);
+
+        results = results.subList(startPosition, startPosition + size);
+        final List<ScoreRecord> records = scoreRecordService.converUsersToSocreRecords(results);
+
 
         return new ResponseEntity<>(Map.ofEntries(entry("scorelist", records),
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.GET) //
+    @RequestMapping(value = "/logout", method = RequestMethod.POST) //
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logOut(HttpServletResponse response, HttpSession httpSession) {
+    public ResponseEntity<?> logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
-
+        return new ResponseEntity<>("logout!", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/me/profile", method = RequestMethod.POST)
@@ -256,10 +286,10 @@ public class RestApiController {
         final String password = request.getParameter("current_password");
         final String newPassword = request.getParameter("new_password");
         final String newPasswordRepeat = request.getParameter("new_password_repeat");
-        final MultipartFile avatar = request.getFile("avatar");
+        final String avatar= request.getParameter("avatar");
 
 
-        if (currentUser.getPassword() != password) {
+        if (!currentUser.getPassword().equals(password)) {
             return new ResponseEntity<>("Wrong current password!",
                     HttpStatus.UNAUTHORIZED);
         }
@@ -297,8 +327,8 @@ public class RestApiController {
             }
         }
 
-        if (avatar != null && !avatar.getOriginalFilename().equals("")) {
-            currentUser.setAvatar(avatar.getOriginalFilename());
+        if (avatar != null && !avatar.equals("")) {
+            currentUser.setAvatar(avatar);
         }
 
         userService.updateUser(currentUser);

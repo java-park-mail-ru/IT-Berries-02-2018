@@ -1,6 +1,7 @@
 package com.itberries2018.demo.servicesImpl;
 
-import com.itberries2018.demo.models.User;
+import com.itberries2018.demo.Entities.History;
+import com.itberries2018.demo.Entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.itberries2018.demo.servicesIntefaces.UserService;
@@ -17,14 +18,21 @@ public class UserServiceImplementation implements UserService {
     @Autowired
     private UserServiceJpaDao userServiceJpaDao;
 
-    private  final List<User> users;
-    {
+    @Autowired
+    private HistoryServiceJpaDao historyServiceJpaDao;
+
+    private  final List<User> users;{
         users = populateDummyUsers();
     }
 
     @Override
     public List<User> findAllUsers() {
         return userServiceJpaDao.getAll();
+    }
+
+    @Override
+    public List<Object[]> findAllUsersForScoreBoard() {
+        return historyServiceJpaDao.getSortedData();
     }
 
     @Override
@@ -55,9 +63,15 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
+    public void saveHistoryNote(String dateResult, int score, User user) {
+            historyServiceJpaDao.add(dateResult, score, user);
+    }
+
+    @Override
     public void updateUser(User user) {
-        final int index = users.indexOf(user);
-        users.set(index, user);
+        //final int index = users.indexOf(user);
+        //users.set(index, user);
+        userServiceJpaDao.updateUser(user);
     }
 
     @Override
@@ -80,17 +94,7 @@ public class UserServiceImplementation implements UserService {
         return users;
     }
 
-    public User makeUser(String login, String email, String password, String avatarName) {
-
-        return new User(COUNTER.incrementAndGet(), login, email, password, avatarName, 1);
-    }
-
     public User findByEmail(String email) {
-        for (User user : users) {
-            if (user.getEmail().equalsIgnoreCase(email)) {
-                return user;
-            }
-        }
-        return null;
+        return userServiceJpaDao.findByEmail(email);
     }
 }
