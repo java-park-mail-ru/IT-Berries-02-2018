@@ -262,7 +262,7 @@ public class RestApiController {
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.POST) //
+    @RequestMapping(value = "/logout", method = RequestMethod.PUT) //
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
