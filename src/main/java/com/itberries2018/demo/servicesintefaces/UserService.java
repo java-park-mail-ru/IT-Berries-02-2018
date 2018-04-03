@@ -1,8 +1,6 @@
-package com.itberries2018.demo.servicesIntefaces;
+package com.itberries2018.demo.servicesintefaces;
 
-import com.itberries2018.demo.Entities.History;
-import com.itberries2018.demo.Entities.User;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import com.itberries2018.demo.entities.User;
 
 import java.util.List;
 

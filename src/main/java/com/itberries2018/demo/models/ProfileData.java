@@ -1,6 +1,6 @@
 package com.itberries2018.demo.models;
 
-import com.itberries2018.demo.Entities.User;
+import com.itberries2018.demo.entities.User;
 
 public class ProfileData {
     public String getUsername() {

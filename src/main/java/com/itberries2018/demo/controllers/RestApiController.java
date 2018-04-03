@@ -1,7 +1,7 @@
 package com.itberries2018.demo.controllers;
 
-import com.itberries2018.demo.Entities.History;
-import com.itberries2018.demo.Entities.User;
+import com.itberries2018.demo.entities.History;
+import com.itberries2018.demo.entities.User;
 import com.itberries2018.demo.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +10,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.UriComponentsBuilder;
-import com.itberries2018.demo.servicesIntefaces.ScoreRecordService;
-import com.itberries2018.demo.servicesIntefaces.UserService;
+import com.itberries2018.demo.servicesintefaces.ScoreRecordService;
+import com.itberries2018.demo.servicesintefaces.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -34,9 +33,9 @@ import static java.util.Map.entry;
 public class RestApiController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestApiController.class);
-    @Autowired
+
     private final UserService userService;
-    @Autowired
+
     private final ScoreRecordService scoreRecordService;
 
     @Autowired
@@ -44,8 +43,6 @@ public class RestApiController {
         this.userService = userService;
         this.scoreRecordService = scoreRecordService;
     }
-
-
 
 
     @RequestMapping(value = "/users/", method = RequestMethod.GET)
@@ -126,7 +123,7 @@ public class RestApiController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/login",  method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> login(MultipartHttpServletRequest request, HttpServletResponse response,
                                    HttpSession httpSession) {
         LOGGER.info("Trying to login user");
@@ -183,7 +180,7 @@ public class RestApiController {
         }
         //final User user = userService.makeUser(login, email, password, avatarName);
 
-        final User user = new  User();
+        final User user = new User();
         user.setAvatar(avatarName);
         user.setEmail(email);
         user.setPassword(password);
@@ -210,8 +207,8 @@ public class RestApiController {
         return new ResponseEntity<>(Map.ofEntries(entry("username", currentUser.getName())), HttpStatus.OK);
     }
 
-    @RequestMapping(value="/score", method = RequestMethod.POST)
-    public ResponseEntity<?>setUserScore(MultipartHttpServletRequest request, HttpServletResponse httpServletResponse, HttpSession httpSession){
+    @RequestMapping(value = "/score", method = RequestMethod.POST)
+    public ResponseEntity<?> setUserScore(MultipartHttpServletRequest request, HttpSession httpSession) {
         LOGGER.info("Trying to set score for the user");
         final User currentUser = (User) httpSession.getAttribute("user");
         if (currentUser == null) {
@@ -225,7 +222,7 @@ public class RestApiController {
 
         userService.saveHistoryNote(dateWin, score, currentUser);
 
-        return new ResponseEntity<>("Insert score for user"+currentUser.getUsername(), HttpStatus.OK);
+        return new ResponseEntity<>("Очки успешно проставлены", HttpStatus.OK);
     }
 
 
@@ -241,11 +238,11 @@ public class RestApiController {
             return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
         }
         final int startPosition = (page - 1) * size;
-        List<Object []> results = userService.findAllUsersForScoreBoard();
+        List<Object[]> results = userService.findAllUsersForScoreBoard();
 
-        for(Object[] historyAndUserNotes: results){
+        for (Object[] historyAndUserNotes : results) {
             History entityHist = (History) historyAndUserNotes[0];
-            User entityUser = (User)historyAndUserNotes[1];
+            User entityUser = (User) historyAndUserNotes[1];
             System.out.println(entityHist);
             System.out.println(entityUser);
         }
@@ -286,7 +283,7 @@ public class RestApiController {
         final String password = request.getParameter("current_password");
         final String newPassword = request.getParameter("new_password");
         final String newPasswordRepeat = request.getParameter("new_password_repeat");
-        final String avatar= request.getParameter("avatar");
+        final String avatar = request.getParameter("avatar");
 
 
         if (!currentUser.getPassword().equals(password)) {
@@ -296,7 +293,7 @@ public class RestApiController {
         if ((newEmail != null && !newEmail.equals(currentUser.getEmail()) && !newEmail.equals(""))
                 || (newLogin != null && !newLogin.equals(currentUser.getUsername()) && !newLogin.equals(""))
                 || (newPassword != null && !newPassword.equals(currentUser.getPassword()) && !newPassword.equals(""))) {
-            if (password == null || !password.equals(currentUser.getPassword())) {
+            if (!password.equals(currentUser.getPassword())) {
                 LOGGER.error("Неверный пароль");
                 return new ResponseEntity<>(new ErrorJson("Неверный пароль"), HttpStatus.BAD_REQUEST);
             }

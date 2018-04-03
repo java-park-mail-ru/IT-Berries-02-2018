@@ -1,28 +1,29 @@
-package com.itberries2018.demo.Entities;
+package com.itberries2018.demo.entities;
+
 import java.util.Objects;
 import javax.persistence.*;
 
 @Entity
-@Table(name="users_" )
+@Table(name = "users_")
 public class User {
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="user_name")
+    @Column(name = "user_name")
     private String username;
 
-    @Column(name="email")
+    @Column(name = "email")
     private String email;
 
-    @Column(name="password")
+    @Column(name = "password")
     private String password;
 
-    @Column(name="avatar")
+    @Column(name = "avatar")
     private String avatar;
 
-    public User(){
+    public User() {
 
     }
 
@@ -123,7 +124,7 @@ public class User {
         }
         final User other = (User) obj;
         //noinspection RedundantIfStatement
-        if (id != other.id) {
+        if (!Objects.equals(id, other.id)) {
             return false;
         }
         return true;
@@ -131,12 +132,11 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", avatar='" + avatar + '\'' +
-                '}';
+        return "User{"
+                + "id=" + id
+                + ", username='" + username
+                + '\'' + ", email='" + email
+                + '\'' + ", password='" + password
+                + '\'' + ", avatar='" + avatar + '\'' + '}';
     }
 }

@@ -1,10 +1,9 @@
-package com.itberries2018.demo.servicesImpl;
+package com.itberries2018.demo.servicesimpl;
 
-import com.itberries2018.demo.Entities.History;
-import com.itberries2018.demo.Entities.User;
+import com.itberries2018.demo.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.itberries2018.demo.servicesIntefaces.UserService;
+import com.itberries2018.demo.servicesintefaces.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +14,23 @@ public class UserServiceImplementation implements UserService {
 
     private static final AtomicLong COUNTER = new AtomicLong();
 
-    @Autowired
-    private UserServiceJpaDao userServiceJpaDao;
+    private final UserServiceJpaDao userServiceJpaDao;
 
-    @Autowired
-    private HistoryServiceJpaDao historyServiceJpaDao;
+    private final HistoryServiceJpaDao historyServiceJpaDao;
 
-    private  final List<User> users;{
+    private final List<User> users;
+
+    {
         users = populateDummyUsers();
     }
+
+    @Autowired
+    public UserServiceImplementation(UserServiceJpaDao userServiceJpaDao, HistoryServiceJpaDao historyServiceJpaDao) {
+        this.userServiceJpaDao = userServiceJpaDao;
+        this.historyServiceJpaDao = historyServiceJpaDao;
+    }
+
+
 
     @Override
     public List<User> findAllUsers() {
@@ -38,9 +45,9 @@ public class UserServiceImplementation implements UserService {
     @Override
     public User findById(long id) {
         User user = userServiceJpaDao.getById(id);
-        if (user!= null){
+        if (user != null) {
             return user;
-        }else{
+        } else {
             return null;
         }
     }
@@ -59,12 +66,12 @@ public class UserServiceImplementation implements UserService {
     public void saveUser(User user) {
 
         //users.add(user);
-        userServiceJpaDao.add( user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
+        userServiceJpaDao.add(user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
     }
 
     @Override
     public void saveHistoryNote(String dateResult, int score, User user) {
-            historyServiceJpaDao.add(dateResult, score, user);
+        historyServiceJpaDao.add(dateResult, score, user);
     }
 
     @Override
@@ -80,7 +87,7 @@ public class UserServiceImplementation implements UserService {
     }
 
     @SuppressWarnings("MagicNumber")
-    private  List<User> populateDummyUsers() {
+    private List<User> populateDummyUsers() {
         final List<User> usersData = new ArrayList<>();
         usersData.add(new User(COUNTER.incrementAndGet(), "user1", "user1@mail.ru", "user1", 10));
         usersData.add(new User(COUNTER.incrementAndGet(), "user2", "user2@mail.ru", "user2", 20));

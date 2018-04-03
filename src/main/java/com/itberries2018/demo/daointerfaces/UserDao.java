@@ -1,26 +1,27 @@
-package com.itberries2018.demo.daoInterfaces;
+package com.itberries2018.demo.daointerfaces;
 
-import com.itberries2018.demo.Entities.User;
+import com.itberries2018.demo.entities.User;
 
 import java.util.List;
 
 public interface UserDao {
-    //create
+
     User add(String userName, String email, String password, String avatar);
 
-    //read
+
     List<User> getAll();
 
     User getById(Long id);
 
-    //update Password
+
     void updatePassword(Long id, String newPassword);
 
-    //update
+
     void updateAvatar(Long id, String avatar);
 
     void updateUser(User user);
-    //delete
+
+
     void remove(User id);
 
     boolean isUserExist(User user);

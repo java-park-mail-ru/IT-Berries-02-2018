@@ -3,8 +3,8 @@ package com.itberries2018.demo.models;
 
 public class LoginForm {
 
-    private String email;
-    private String password;
+    private final String email;
+    private final String password;
 
     public String getPassword() {
         return password;
