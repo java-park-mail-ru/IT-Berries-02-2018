@@ -171,7 +171,7 @@ public class RestApiController {
         }
 
         final String avatarName;
-        if (avatar.equals("")) {
+        if (avatar == null || avatar.equals("")) {
             avatarName = "noavatar.png";
         } else {
             avatarName = avatar;
