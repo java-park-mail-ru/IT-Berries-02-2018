@@ -76,8 +76,6 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public void updateUser(User user) {
-        //final int index = users.indexOf(user);
-        //users.set(index, user);
         userServiceJpaDao.updateUser(user);
     }
 

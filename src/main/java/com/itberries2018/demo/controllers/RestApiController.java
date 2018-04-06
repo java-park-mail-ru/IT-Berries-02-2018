@@ -131,7 +131,7 @@ public class RestApiController {
 
         final User user = userService.findByEmail(loginForm.getEmail());
         if (user == null || !user.getPassword().equals(loginForm.getPassword())) {
-            LOGGER.error("Unable to login. User with login {} not found.", loginForm.getEmail());
+            LOGGER.error("Unable to login. User with email {} not found.", loginForm.getEmail());
             return new ResponseEntity<>(Map.ofEntries(entry("error", "Не верно указан E-Mail или пароль")),
                     HttpStatus.BAD_REQUEST);
         }
@@ -257,11 +257,11 @@ public class RestApiController {
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.PUT) //
+    @RequestMapping(value = "/logout", method = RequestMethod.DELETE) //
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
-        return new ResponseEntity<>("logout!", HttpStatus.OK);
+        return new ResponseEntity<>("logout!", HttpStatus.OK);// поменять на json!!!!!!
     }
 
     @RequestMapping(value = "/me/profile", method = RequestMethod.POST)

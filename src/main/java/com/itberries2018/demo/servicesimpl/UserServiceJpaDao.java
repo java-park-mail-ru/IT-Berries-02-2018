@@ -69,7 +69,8 @@ public class UserServiceJpaDao implements UserDao {
 
     @Override
     public void updateUser(User user) {
-        Query query = em.createQuery("UPDATE User u SET u.password=:password, u.email=:email, u.avatar=:avatar where u.username=:username")
+        Query query = em.createQuery("UPDATE User u SET u.password=:password, u.email=:email,"
+                + " u.avatar=:avatar where u.username=:username")
                 .setParameter("email", user.getEmail())
                 .setParameter("password", user.getPassword())
                 .setParameter("avatar", user.getAvatar())
