@@ -1,5 +1,5 @@
 CREATE TABLE users_ (
-  user_id bigint NOT NULL,
+  user_id BIGSERIAL PRIMARY KEY ,
   avatar character varying(255),
   email character varying(255),
   password character varying(255),
@@ -7,8 +7,8 @@ CREATE TABLE users_ (
 );
 
 CREATE TABLE history (
-  id_history bigint NOT NULL,
+  id_history BIGSERIAL PRIMARY KEY,
   date_result date,
   score integer,
-  user_id bigint
+  user_id bigint REFERENCES users_(user_id)
 );
