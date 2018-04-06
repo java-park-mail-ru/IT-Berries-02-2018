@@ -261,7 +261,7 @@ public class RestApiController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
-        return new ResponseEntity<>("logout!", HttpStatus.OK);// поменять на json!!!!!!
+        return new ResponseEntity<>("logout!", HttpStatus.OK); // поменять на json!!!!!!
     }
 
     @RequestMapping(value = "/me/profile", method = RequestMethod.POST)
