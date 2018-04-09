@@ -6,18 +6,15 @@ import com.itberries2018.demo.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.util.UriComponentsBuilder;
 import com.itberries2018.demo.servicesintefaces.ScoreRecordService;
 import com.itberries2018.demo.servicesintefaces.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -42,39 +39,6 @@ public class RestApiController {
         this.scoreRecordService = scoreRecordService;
     }
 
-
-    @RequestMapping(value = "/signUp/", method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@RequestBody User user, HttpSession httpSession, UriComponentsBuilder ucBuilder) {
-
-        LOGGER.info("Creating User : {}", user);
-
-        if (userService.isUserExist(user)) {
-            LOGGER.error("Unable to create. A User with name {} already exist", user.getName());
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        userService.saveUser(user);
-        final HttpHeaders headers = new HttpHeaders();
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-    }
-
-
-    @RequestMapping(value = "/currentUser/", method = RequestMethod.POST)
-    public ResponseEntity<?> currentUser(HttpSession httpSessione) {
-
-        final Enumeration<String> names = httpSessione.getAttributeNames();
-        while (names.hasMoreElements()) {
-            final String name = names.nextElement();
-            if (name.equals("online")) {
-                if (httpSessione.getAttribute(name).equals(true)) {
-                    final Long id = (long) httpSessione.getAttribute("Id");
-                    final User user = userService.findById(id);
-                    return new ResponseEntity<>(user, HttpStatus.OK);
-                }
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> login(MultipartHttpServletRequest request, HttpServletResponse response,
