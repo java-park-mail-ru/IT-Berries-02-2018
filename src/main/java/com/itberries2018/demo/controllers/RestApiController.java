@@ -262,7 +262,7 @@ public class RestApiController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
-        return new ResponseEntity<>(HttpStatus.OK); // поменять на json!!!!!!
+        return new ResponseEntity<>(HttpStatus.OK); 
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.PUT)
@@ -330,24 +330,9 @@ public class RestApiController {
         userService.updateUser(currentUser);
         httpSession.setAttribute("user", currentUser);
 
-       // return new ResponseEntity<>(new SuccessJson("Данные успешно изменены"), HttpStatus.CREATED);
+
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
-
-//    @RequestMapping(value = "/me/profile", method = RequestMethod.GET)
-//    public ResponseEntity<?> meProfile(HttpServletResponse response, HttpSession httpSession) {
-//        LOGGER.info("Trying to authentificate user");
-//
-//        final User currentUser = (User) httpSession.getAttribute("user");
-//
-//        if (currentUser == null) {
-//            LOGGER.error("Unable to auth.");
-//            return new ResponseEntity<>("The user isn't authorized",
-//                    HttpStatus.UNAUTHORIZED);
-//        }
-//
-//        return new ResponseEntity(new ProfileData(currentUser), HttpStatus.OK);
-//    }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<?> home() {
