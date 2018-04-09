@@ -43,28 +43,6 @@ public class RestApiController {
     }
 
 
-    @RequestMapping(value = "/users/", method = RequestMethod.GET)
-    public ResponseEntity<List<User>> listAllUsers() {
-        final List<User> users = userService.findAllUsers();
-        if (users.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
-
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUser(@PathVariable("id") long id) {
-        LOGGER.info("Fetching User with id {}", id);
-        final User user = userService.findById(id);
-        if (user == null) {
-            LOGGER.error("User with id {} not found.", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-
     @RequestMapping(value = "/signUp/", method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody User user, HttpSession httpSession, UriComponentsBuilder ucBuilder) {
 
@@ -75,31 +53,8 @@ public class RestApiController {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         userService.saveUser(user);
-        //userServiceJpaDao.add(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
         final HttpHeaders headers = new HttpHeaders();
-        //headers.setLocation(ucBuilder.path("/api/user/{id}").buildAndExpand(user.getId()).toUri());
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-    }
-
-
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) {
-        LOGGER.info("Updating User with id {}", id);
-
-        final User currentUser = userService.findById(id);
-        //final User currentUser = userServiceJpaDao.getById(id);
-        if (currentUser == null) {
-            LOGGER.error("Unable to update. User with id {} not found.", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        currentUser.setUsername(user.getUsername());
-        currentUser.setEmail(user.getEmail());
-        currentUser.setPassword(user.getPassword());
-
-
-        userService.updateUser(currentUser);
-        return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
 
 
@@ -147,7 +102,6 @@ public class RestApiController {
         final String email = request.getParameter("email");
         final String password = request.getParameter("password");
         final String repPassword = request.getParameter("password_repeat");
-        //final MultipartFile avatar = request.getFile("avatar");
         final String avatar = request.getParameter("avatar");
 
         if (login == null) {
@@ -176,7 +130,6 @@ public class RestApiController {
         } else {
             avatarName = avatar;
         }
-        //final User user = userService.makeUser(login, email, password, avatarName);
 
         final User user = new User();
         user.setAvatar(avatarName);
@@ -205,25 +158,6 @@ public class RestApiController {
         //return new ResponseEntity<>(Map.ofEntries(entry("username", currentUser.getName())), HttpStatus.OK);
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
-
-    @RequestMapping(value = "/score", method = RequestMethod.POST)
-    public ResponseEntity<?> setUserScore(MultipartHttpServletRequest request, HttpSession httpSession) {
-        LOGGER.info("Trying to set score for the user");
-        final User currentUser = (User) httpSession.getAttribute("user");
-        if (currentUser == null) {
-            LOGGER.error("Unable to auth.");
-            return new ResponseEntity<>("The user isn't authorized",
-                    HttpStatus.UNAUTHORIZED);
-        }
-
-        String dateWin = request.getParameter("dateResult");
-        int score = Integer.parseInt(request.getParameter("score"));
-
-        userService.saveHistoryNote(dateWin, score, currentUser);
-
-        return new ResponseEntity<>("Очки успешно проставлены", HttpStatus.OK);
-    }
-
 
     @RequestMapping(value = "/users/scoreboard", method = RequestMethod.GET)
     public ResponseEntity<?> scoreboard(@RequestParam("listSize") String ssize,
@@ -258,11 +192,11 @@ public class RestApiController {
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.DELETE) //
+    @RequestMapping(value = "/logout", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();
-        return new ResponseEntity<>(HttpStatus.OK); 
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.PUT)
@@ -332,11 +266,6 @@ public class RestApiController {
 
 
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ResponseEntity<?> home() {
-        return new ResponseEntity<>("Welcome!", HttpStatus.OK);
     }
 }
 
