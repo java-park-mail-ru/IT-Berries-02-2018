@@ -35,32 +35,28 @@ public class User {
         this.username = username;
     }
 
-    public User(long id, String username, String email, String password) {
-        this.id = id;
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
     }
 
-    public User(long id, String username, String email, String password, String avatar) {
-        this.id = id;
+    public User(String username, String email, String password, String avatar) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = avatar;
     }
 
-    public User(long id, String username, String email, String password, long score) {
-        this.id = id;
+    public User(String username, String email, String password, long score) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
     }
 
-    public User(long id, String username, String email, String password, String avatar, long score) {
-        this.id = id;
+    public User(String username, String email, String password, String avatar, long score) {
         this.username = username;
         this.email = email;
         this.password = password;

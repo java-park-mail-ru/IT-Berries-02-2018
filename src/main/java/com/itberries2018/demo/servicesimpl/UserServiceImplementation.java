@@ -1,6 +1,7 @@
 package com.itberries2018.demo.servicesimpl;
 
 import com.itberries2018.demo.entities.User;
+import com.itberries2018.demo.models.ScoreRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.itberries2018.demo.servicesintefaces.UserService;
@@ -31,14 +32,13 @@ public class UserServiceImplementation implements UserService {
     }
 
 
-
     @Override
     public List<User> findAllUsers() {
         return userServiceJpaDao.getAll();
     }
 
     @Override
-    public List<Object[]> findAllUsersForScoreBoard() {
+    public List<ScoreRecord> findAllUsersForScoreBoard() {
         return historyServiceJpaDao.getSortedData();
     }
 
@@ -64,8 +64,6 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public void saveUser(User user) {
-
-        //users.add(user);
         userServiceJpaDao.add(user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
     }
 
@@ -87,10 +85,10 @@ public class UserServiceImplementation implements UserService {
     @SuppressWarnings("MagicNumber")
     private List<User> populateDummyUsers() {
         final List<User> usersData = new ArrayList<>();
-        usersData.add(new User(COUNTER.incrementAndGet(), "user1", "user1@mail.ru", "user1", 10));
-        usersData.add(new User(COUNTER.incrementAndGet(), "user2", "user2@mail.ru", "user2", 20));
-        usersData.add(new User(COUNTER.incrementAndGet(), "user3", "user3@mail.ru", "user3", 50));
-        usersData.add(new User(COUNTER.incrementAndGet(), "user4", "user14@mail.ru", "user4", 100));
+        usersData.add(new User("user1", "user1@mail.ru", "user1", 10));
+        usersData.add(new User("user2", "user2@mail.ru", "user2", 20));
+        usersData.add(new User("user3", "user3@mail.ru", "user3", 50));
+        usersData.add(new User("user4", "user14@mail.ru", "user4", 100));
         return usersData;
     }
 

@@ -4,6 +4,7 @@ import com.itberries2018.demo.entities.History;
 import com.itberries2018.demo.daointerfaces.HistoryDao;
 import com.itberries2018.demo.daointerfaces.UserDao;
 import com.itberries2018.demo.entities.User;
+import com.itberries2018.demo.models.ScoreRecord;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -12,6 +13,7 @@ import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -50,9 +52,22 @@ public class HistoryServiceJpaDao implements HistoryDao {
 
 
     @Override
-    public List<Object[]> getSortedData() {
+    public List<ScoreRecord>  getSortedData() {
         String query = "select   hist, pl from History as hist, User as pl where hist.user = pl.id";
-        return (List<Object[]>) em.createQuery(query).getResultList();
+
+        List<Object[]> results =  (List<Object[]>) em.createQuery(query).getResultList();
+        final List<ScoreRecord> records = new ArrayList<>();
+        for (Object[] hiAndpl : results) {
+            History entityHist = (History) hiAndpl[0];
+            User entityUser = (User) hiAndpl[1];
+            records.add(new ScoreRecord(entityUser, entityHist));
+        }
+        records.sort((o1, o2) -> Long.compare(o2.getScore(), o1.getScore()));
+        for (int i = 0; i < records.size(); ++i) {
+            records.get(i).setId(i);
+        }
+
+        return records;
     }
 
 

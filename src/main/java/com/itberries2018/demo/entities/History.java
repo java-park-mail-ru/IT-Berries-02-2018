@@ -15,7 +15,8 @@ public class History {
     @Column(name = "score")
     private Integer score;
 
-    @ManyToOne(targetEntity = User.class)
+
+    @ManyToOne(targetEntity = User.class, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     private User user;
 

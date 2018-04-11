@@ -1,6 +1,5 @@
 package com.itberries2018.demo.controllers;
 
-import com.itberries2018.demo.entities.History;
 import com.itberries2018.demo.entities.User;
 import com.itberries2018.demo.models.*;
 import org.slf4j.Logger;
@@ -114,12 +113,9 @@ public class RestApiController {
         final User currentUser = (User) httpSession.getAttribute("user");
 
         if (currentUser == null) {
-            LOGGER.error("Unable to auth.");
             return new ResponseEntity<>("The user isn't authorized",
                     HttpStatus.UNAUTHORIZED);
         }
-
-        //return new ResponseEntity<>(Map.ofEntries(entry("username", currentUser.getName())), HttpStatus.OK);
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
 
@@ -135,24 +131,15 @@ public class RestApiController {
             return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
         }
         final int startPosition = (page - 1) * size;
-        List<Object[]> results = userService.findAllUsersForScoreBoard();
-
-        for (Object[] historyAndUserNotes : results) {
-            History entityHist = (History) historyAndUserNotes[0];
-            User entityUser = (User) historyAndUserNotes[1];
-            System.out.println(entityHist);
-            System.out.println(entityUser);
-        }
+        List<ScoreRecord>  results = userService.findAllUsersForScoreBoard();
 
         if (results.size() < startPosition + size) {
             return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
         }
 
         results = results.subList(startPosition, startPosition + size);
-        final List<ScoreRecord> records = scoreRecordService.converUsersToSocreRecords(results);
 
-
-        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", records),
+        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);
     }
 
