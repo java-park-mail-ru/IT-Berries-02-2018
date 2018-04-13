@@ -75,6 +75,7 @@ class RestApiControllerTest {
 
     @Test
     void login() throws Exception {
+        registration();
         MockHttpSession mockSession = new MockHttpSession();
         ResultMatcher ok = MockMvcResultMatchers.status().isOk();
         MockHttpServletRequestBuilder builder =
