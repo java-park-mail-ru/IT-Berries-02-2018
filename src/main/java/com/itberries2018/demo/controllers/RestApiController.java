@@ -55,10 +55,11 @@ public class RestApiController {
         }
         httpSession.setAttribute("user", user);
 
-        return new ResponseEntity<>(new SuccessJson("Пользователь успешно авторизован"), HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
+    @ResponseBody
     public ResponseEntity<?> registration(MultipartHttpServletRequest request, HttpSession httpSession, HttpServletResponse response) {
 
         final String login = request.getParameter("username");
@@ -100,9 +101,10 @@ public class RestApiController {
         user.setPassword(password);
         user.setUsername(login);
         userService.saveUser(user);
-        httpSession.setAttribute("user", user);
+        final User userCurrent = userService.findByEmail(email);
+        httpSession.setAttribute("user", userCurrent);
 
-        return new ResponseEntity<>(new SuccessJson("Пользователь успешно зарегестрирован"), HttpStatus.CREATED);
+        return new ResponseEntity<>(userCurrent, HttpStatus.CREATED);
     }
 
 
@@ -111,7 +113,7 @@ public class RestApiController {
         LOGGER.info("Trying to authentificate user");
 
         final User currentUser = (User) httpSession.getAttribute("user");
-
+        System.out.println(currentUser);
         if (currentUser == null) {
             return new ResponseEntity<>("The user isn't authorized",
                     HttpStatus.UNAUTHORIZED);
@@ -131,7 +133,7 @@ public class RestApiController {
             return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
         }
         final int startPosition = (page - 1) * size;
-        List<ScoreRecord>  results = userService.findAllUsersForScoreBoard();
+        List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
 
         if (results.size() < startPosition + size) {
             return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);

@@ -1,5 +1,6 @@
 package com.itberries2018.demo.entities;
 
+
 import java.util.Objects;
 import javax.persistence.*;
 
