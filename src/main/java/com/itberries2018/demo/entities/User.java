@@ -1,16 +1,32 @@
-package com.itberries2018.demo.models;
+package com.itberries2018.demo.entities;
 
 
 import java.util.Objects;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "users_")
 public class User {
+    @Id
+    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private long id;
-    private Long score;
+    @Column(name = "user_name")
     private String username;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "password")
     private String password;
+
+    @Column(name = "avatar")
     private String avatar;
+
+    public User() {
+
+    }
 
     public String getUsername() {
         return username;
@@ -20,40 +36,32 @@ public class User {
         this.username = username;
     }
 
-    public User(long id, String username, String email, String password) {
-        this.id = id;
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
-        this.score = 0L;
     }
 
-    public User(long id, String username, String email, String password, String avatar) {
-        this.id = id;
+    public User(String username, String email, String password, String avatar) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = avatar;
-        this.score = 0L;
     }
 
-    public User(long id, String username, String email, String password, long score) {
-        this.id = id;
+    public User(String username, String email, String password, long score) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
-        this.score = score;
     }
 
-    public User(long id, String username, String email, String password, String avatar, long score) {
-        this.id = id;
+    public User(String username, String email, String password, String avatar, long score) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.avatar = avatar;
-        this.score = score;
     }
 
     public String getEmail() {
@@ -78,14 +86,6 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Long getScore() {
-        return score;
-    }
-
-    public void setScore(Long score) {
-        this.score = score;
     }
 
     public String getName() {
@@ -121,7 +121,7 @@ public class User {
         }
         final User other = (User) obj;
         //noinspection RedundantIfStatement
-        if (id != other.id) {
+        if (!Objects.equals(id, other.id)) {
             return false;
         }
         return true;
@@ -129,7 +129,11 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ",  username=" + username
-                + ", email=" + email + ",  avatar=" + avatar + ']';
+        return "User{"
+                + "id=" + id
+                + ", username='" + username
+                + '\'' + ", email='" + email
+                + '\'' + ", password='" + password
+                + '\'' + ", avatar='" + avatar + '\'' + '}';
     }
 }

@@ -1,15 +1,19 @@
 package com.itberries2018.demo.models;
 
-public class ScoreRecord  {
+import com.itberries2018.demo.entities.History;
+import com.itberries2018.demo.entities.User;
+
+public class ScoreRecord {
 
     private long id;
     private long score;
     private String username;
 
-    public ScoreRecord(User user) {
+    public ScoreRecord(User user, History history) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.score = user.getScore();
+        this.score = history.getScore();
+
     }
 
     public long getId() {
