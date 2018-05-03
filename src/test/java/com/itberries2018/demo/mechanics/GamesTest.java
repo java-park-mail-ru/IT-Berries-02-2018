@@ -140,9 +140,9 @@ class GamesTest {
         };
         UserGameSessionData userData1 = new UserGameSessionData(user1, webSocketSession);
         UserGameSessionData userData2 = new UserGameSessionData(user2, webSocketSession);
-        GameSession gameSession = new GameSession(userData1, userData2);
-        ArrayList<MapCell> rockets = new ArrayList<MapCell>();
-        GameMap map = gameSession.getMap();
-        rockets = map.getRockets();
+        //GameSession gameSession = new GameSession(userData1, userData2);
+        //ArrayList<MapCell> rockets = new ArrayList<MapCell>();
+        //GameMap map = gameSession.getMap();
+        //rockets = map.getRockets();
     }
 }
