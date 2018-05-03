@@ -1,15 +1,12 @@
 package com.itberries2018.demo;
 
-import com.itberries2018.demo.websockets.GameWebSocketHandler;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
-import com.itberries2018.demo.websockets.DefaultEchoService;
 
 
 @EnableWebSocket
