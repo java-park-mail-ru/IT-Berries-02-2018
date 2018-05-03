@@ -21,8 +21,11 @@ public class UserGameSessionData {
 
     private ProfileData profileData;
     private WebSocketSession webSocketSession;
+
     public UserGameSessionData(ProfileData profileData, WebSocketSession webSocketSession) {
+
         this.profileData = profileData;
         this.webSocketSession = webSocketSession;
+
     }
 }

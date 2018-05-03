@@ -57,6 +57,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         try {
             session.close(status);
         } catch (Exception ignore) {
+            return;
         }
 
     }
