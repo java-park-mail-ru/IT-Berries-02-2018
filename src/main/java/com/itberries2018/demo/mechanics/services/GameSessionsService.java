@@ -1,6 +1,6 @@
 package com.itberries2018.demo.mechanics.services;
 
-import com.itberries2018.demo.game.GameSession;
+import com.itberries2018.demo.mechanics.game.GameSession;
 import com.itberries2018.demo.websockets.RemotePointService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;

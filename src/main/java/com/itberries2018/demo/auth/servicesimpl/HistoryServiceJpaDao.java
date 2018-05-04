@@ -1,10 +1,10 @@
-package com.itberries2018.demo.servicesimpl;
+package com.itberries2018.demo.auth.servicesimpl;
 
-import com.itberries2018.demo.entities.History;
-import com.itberries2018.demo.daointerfaces.HistoryDao;
-import com.itberries2018.demo.daointerfaces.UserDao;
-import com.itberries2018.demo.entities.User;
-import com.itberries2018.demo.models.ScoreRecord;
+import com.itberries2018.demo.auth.entities.History;
+import com.itberries2018.demo.auth.daointerfaces.HistoryDao;
+import com.itberries2018.demo.auth.daointerfaces.UserDao;
+import com.itberries2018.demo.auth.entities.User;
+import com.itberries2018.demo.auth.models.ScoreRecord;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

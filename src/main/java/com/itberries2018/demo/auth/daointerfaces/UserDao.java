@@ -1,6 +1,6 @@
-package com.itberries2018.demo.daointerfaces;
+package com.itberries2018.demo.auth.daointerfaces;
 
-import com.itberries2018.demo.entities.User;
+import com.itberries2018.demo.auth.entities.User;
 
 import java.util.List;
 

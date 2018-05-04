@@ -1,7 +1,7 @@
-package com.itberries2018.demo.daointerfaces;
+package com.itberries2018.demo.auth.daointerfaces;
 
-import com.itberries2018.demo.entities.User;
-import com.itberries2018.demo.servicesintefaces.UserService;
+import com.itberries2018.demo.auth.entities.User;
+import com.itberries2018.demo.auth.servicesintefaces.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;

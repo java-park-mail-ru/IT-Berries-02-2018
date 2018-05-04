@@ -1,4 +1,4 @@
-package com.itberries2018.demo.game;
+package com.itberries2018.demo.mechanics.game;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,6 @@
-package com.itberries2018.demo.game;
+package com.itberries2018.demo.mechanics.game;
 
-import com.itberries2018.demo.models.ProfileData;
+import com.itberries2018.demo.auth.models.ProfileData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.PriorityQueue;

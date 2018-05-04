@@ -1,4 +1,4 @@
-package com.itberries2018.demo.models;
+package com.itberries2018.demo.auth.models;
 
 
 public class LoginForm {

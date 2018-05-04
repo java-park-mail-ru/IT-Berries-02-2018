@@ -1,4 +1,4 @@
-package com.itberries2018.demo.models;
+package com.itberries2018.demo.auth.models;
 
 import org.springframework.web.socket.WebSocketSession;
 

@@ -1,7 +1,7 @@
-package com.itberries2018.demo.models;
+package com.itberries2018.demo.auth.models;
 
-import com.itberries2018.demo.entities.History;
-import com.itberries2018.demo.entities.User;
+import com.itberries2018.demo.auth.entities.History;
+import com.itberries2018.demo.auth.entities.User;
 
 public class ScoreRecord {
 

@@ -1,8 +1,8 @@
-package com.itberries2018.demo.daointerfaces;
+package com.itberries2018.demo.auth.daointerfaces;
 
-import com.itberries2018.demo.entities.History;
-import com.itberries2018.demo.entities.User;
-import com.itberries2018.demo.models.ScoreRecord;
+import com.itberries2018.demo.auth.entities.History;
+import com.itberries2018.demo.auth.entities.User;
+import com.itberries2018.demo.auth.models.ScoreRecord;
 
 import java.util.List;
 

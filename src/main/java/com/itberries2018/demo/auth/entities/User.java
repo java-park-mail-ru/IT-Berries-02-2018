@@ -1,4 +1,4 @@
-package com.itberries2018.demo.entities;
+package com.itberries2018.demo.auth.entities;
 
 
 import java.util.Objects;

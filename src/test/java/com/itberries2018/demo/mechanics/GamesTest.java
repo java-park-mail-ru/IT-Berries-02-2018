@@ -1,10 +1,10 @@
 package com.itberries2018.demo.mechanics;
 
-import com.itberries2018.demo.entities.User;
+import com.itberries2018.demo.auth.entities.User;
 import com.itberries2018.demo.mechanics.services.GameSessionsService;
-import com.itberries2018.demo.models.ProfileData;
-import com.itberries2018.demo.models.UserGameSessionData;
-import com.itberries2018.demo.servicesintefaces.UserService;
+import com.itberries2018.demo.auth.models.ProfileData;
+import com.itberries2018.demo.auth.models.UserGameSessionData;
+import com.itberries2018.demo.auth.servicesintefaces.UserService;
 import com.itberries2018.demo.websockets.RemotePointService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

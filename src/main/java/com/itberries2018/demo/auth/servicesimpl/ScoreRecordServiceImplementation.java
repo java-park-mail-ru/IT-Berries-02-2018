@@ -1,10 +1,10 @@
-package com.itberries2018.demo.servicesimpl;
+package com.itberries2018.demo.auth.servicesimpl;
 
-import com.itberries2018.demo.entities.History;
-import com.itberries2018.demo.models.ScoreRecord;
-import com.itberries2018.demo.entities.User;
+import com.itberries2018.demo.auth.entities.History;
+import com.itberries2018.demo.auth.models.ScoreRecord;
+import com.itberries2018.demo.auth.entities.User;
 import org.springframework.stereotype.Service;
-import com.itberries2018.demo.servicesintefaces.ScoreRecordService;
+import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.itberries2018.demo.controllers;
 
-import com.itberries2018.demo.entities.User;
-import com.itberries2018.demo.models.*;
+import com.itberries2018.demo.auth.entities.User;
+import com.itberries2018.demo.auth.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.itberries2018.demo.servicesintefaces.ScoreRecordService;
-import com.itberries2018.demo.servicesintefaces.UserService;
+import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
+import com.itberries2018.demo.auth.servicesintefaces.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;

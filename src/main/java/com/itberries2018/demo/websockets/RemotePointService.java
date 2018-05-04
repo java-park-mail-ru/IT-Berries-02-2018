@@ -1,13 +1,13 @@
 package com.itberries2018.demo.websockets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itberries2018.demo.entities.User;
+import com.itberries2018.demo.auth.entities.User;
 import com.itberries2018.demo.mechanics.Game;
 import com.itberries2018.demo.mechanics.events.game.GameResult;
 import com.itberries2018.demo.mechanics.events.game.Start;
 import com.itberries2018.demo.mechanics.player.GamePlayer;
-import com.itberries2018.demo.servicesintefaces.ScoreRecordService;
-import com.itberries2018.demo.servicesintefaces.UserService;
+import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
+import com.itberries2018.demo.auth.servicesintefaces.UserService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;

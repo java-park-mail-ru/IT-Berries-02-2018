@@ -1,10 +1,10 @@
-package com.itberries2018.demo.servicesimpl;
+package com.itberries2018.demo.auth.servicesimpl;
 
-import com.itberries2018.demo.entities.User;
-import com.itberries2018.demo.models.ScoreRecord;
+import com.itberries2018.demo.auth.entities.User;
+import com.itberries2018.demo.auth.models.ScoreRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.itberries2018.demo.servicesintefaces.UserService;
+import com.itberries2018.demo.auth.servicesintefaces.UserService;
 
 import java.util.ArrayList;
 import java.util.List;

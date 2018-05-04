@@ -1,7 +1,7 @@
-package com.itberries2018.demo.servicesintefaces;
+package com.itberries2018.demo.auth.servicesintefaces;
 
-import com.itberries2018.demo.entities.User;
-import com.itberries2018.demo.models.ScoreRecord;
+import com.itberries2018.demo.auth.entities.User;
+import com.itberries2018.demo.auth.models.ScoreRecord;
 
 import java.util.List;
 

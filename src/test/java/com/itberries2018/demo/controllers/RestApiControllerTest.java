@@ -1,11 +1,8 @@
 package com.itberries2018.demo.controllers;
 
-import com.itberries2018.demo.daointerfaces.UserDao;
-import com.itberries2018.demo.entities.History;
-import com.itberries2018.demo.entities.User;
-import com.itberries2018.demo.models.LoginForm;
-import com.itberries2018.demo.models.ScoreRecord;
-import com.itberries2018.demo.servicesintefaces.UserService;
+import com.itberries2018.demo.auth.entities.User;
+import com.itberries2018.demo.auth.models.ScoreRecord;
+import com.itberries2018.demo.auth.servicesintefaces.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
