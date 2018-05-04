@@ -26,4 +26,9 @@ public class ScoreRecordServiceImplementation implements ScoreRecordService {
         }
         return records;
     }
+
+    @Override
+    public void incrementScore(Long id) {
+
+    }
 }

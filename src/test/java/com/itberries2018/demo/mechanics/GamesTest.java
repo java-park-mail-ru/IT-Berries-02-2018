@@ -1,19 +1,13 @@
 package com.itberries2018.demo.mechanics;
 
 import com.itberries2018.demo.entities.User;
-import com.itberries2018.demo.game.GameMap;
-import com.itberries2018.demo.game.GameSession;
-import com.itberries2018.demo.game.MapCell;
 import com.itberries2018.demo.mechanics.services.GameSessionsService;
 import com.itberries2018.demo.models.ProfileData;
 import com.itberries2018.demo.models.UserGameSessionData;
 import com.itberries2018.demo.servicesintefaces.UserService;
 import com.itberries2018.demo.websockets.RemotePointService;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -22,17 +16,13 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketExtension;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.sockjs.transport.session.WebSocketServerSockJsSession;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ExtendWith(SpringExtension.class)

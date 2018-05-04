@@ -1,65 +1,67 @@
 package com.itberries2018.demo.websockets;
 
-import com.itberries2018.demo.models.ProfileData;
-import com.itberries2018.demo.servicesintefaces.UserService;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itberries2018.demo.mechanics.events.game.Turn;
+import com.itberries2018.demo.mechanics.events.logic.Move;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
+import java.io.IOException;
 
-@Component
+@SuppressWarnings("OverlyBroadThrowsClause")
 public class GameWebSocketHandler extends TextWebSocketHandler {
 
-    private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameWebSocketHandler.class);
     @NotNull
-    private final RemotePointService remotePointService;
-    @NotNull
-    private final UserService userService;
+    private final RemotePointService service;
 
     @Autowired
-    public GameWebSocketHandler(@NotNull RemotePointService remotePointService,
-                                @NotNull UserService userService) {
-        this.remotePointService = remotePointService;
-        this.userService = userService;
+    private final ObjectMapper objectMapper;
+
+    public GameWebSocketHandler(@NotNull RemotePointService service, ObjectMapper objectMapper) {
+        this.service = service;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String reply = message.getPayload();
-        final Long id = (Long) session.getAttributes().get("userId");
-        if (this.userService.findById(id) != null) {
-            ProfileData profileData =  new ProfileData(this.userService.findById(id));
-            if (reply.equals("Alians")) {
-                this.remotePointService.addAlian(profileData, session);
-                session.sendMessage(new TextMessage("session added to aliens queue"));
-            } else if (reply.equals("Humans")) {
-                this.remotePointService.addHuman(profileData, session);
-                session.sendMessage(new TextMessage("session added to humans queue"));
-            } else {
-                session.sendMessage(new TextMessage("wrong fraction"));
-            }
-        } else {
-            closeSessionSilently(session, ACCESS_DENIED);
-            return;
-        }
+    public void handleTransportError(WebSocketSession session, Throwable throwable) throws Exception {
+        LOGGER.warn("Transportation problem", throwable);
     }
 
-    private void closeSessionSilently(@NotNull WebSocketSession session, @Nullable CloseStatus closeStatus) {
-        final CloseStatus status = closeStatus == null ? SERVER_ERROR : closeStatus;
-        //noinspection OverlyBroadCatchBlock
+    @SuppressWarnings("OverlyBroadThrowsClause")
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        LOGGER.info("Disconnected user with id  " + session.getAttributes().get("userId"));
+        service.disconnectedHandler(Long.valueOf((session.getAttributes().get("userId").toString())));
+    }
+
+    @SuppressWarnings("OverlyBroadThrowsClause")
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        service.registerUser(Long.valueOf(session.getAttributes().get("userId").toString()), session);
+        LOGGER.info("Connected user with id  " + session.getAttributes().get("userId"));
+    }
+
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage jsonTextMessage) throws Exception {
+        final Long userId = Long.valueOf(((Integer) session.getAttributes().get("userId")));
         try {
-            session.close(status);
-        } catch (Exception ignore) {
-            return;
+            final Message message = objectMapper.readValue(jsonTextMessage.getPayload(), Message.class);
+            if (message.getClass() == Move.class || message.getClass() == Turn.class) {
+                service.handleGameMessage(message, userId);
+            }
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (IOException ex) {
+            LOGGER.error("wrong json format response", ex);
         }
-
     }
-
 }

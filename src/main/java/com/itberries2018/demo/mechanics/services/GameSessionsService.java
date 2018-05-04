@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Service
-public class GameSessionsService {
+public class GameSessionsService { // а нужен ли ?
 
     private final Set<GameSession> gameSessions = new LinkedHashSet<>();
 
@@ -21,22 +21,22 @@ public class GameSessionsService {
     }
 
     public void checkForNewSessions() {
-        for (GameSession session : this.remotePointService.getNewSessions()) {
-            if (session.getStatus() == GameSession.Status.CREATED) {
-                gameSessions.add(session);
-            }
-        }
-        for (GameSession session : this.gameSessions) {
-            switch (session.getStatus()) {
-                case READY_FOR_START:
-                    session.start();
-                    break;
-                case OVERED:
-                    gameSessions.remove(session);
-                    break;
-                default:
-                    session.step();
-            }
-        }
+        //        for (GameSession session : this.remotePointService.getNewSessions()) {
+        //            if (session.getStatus() == GameSession.Status.CREATED) {
+        //                gameSessions.add(session);
+        //            }
+        //        }
+        //        for (GameSession session : this.gameSessions) {
+        //            switch (session.getStatus()) {
+        //                case READY_FOR_START:
+        //                    session.start();
+        //                    break;
+        //                case OVERED:
+        //                    gameSessions.remove(session);
+        //                    break;
+        //                default:
+        //                    session.step();
+        //            }
+        //        }
     }
 }

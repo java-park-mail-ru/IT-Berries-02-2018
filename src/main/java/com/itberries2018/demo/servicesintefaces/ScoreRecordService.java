@@ -8,4 +8,6 @@ public interface ScoreRecordService {
 
     List<ScoreRecord> converUsersToSocreRecords(List<Object[]> users);
 
+    void incrementScore(Long id);
+
 }
