@@ -12,7 +12,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class HistoryServiceJpaDao implements HistoryDao {
         History history = new History();
         history.setScore(score);
         history.setUser_id(user);
-        history.setDate_result(convertStringToDate(dateResult));
+        history.setDate_result(convertStringToTimestamp(dateResult));
 
         try {
             em.persist(history);
@@ -46,15 +46,14 @@ public class HistoryServiceJpaDao implements HistoryDao {
         return history;
     }
 
-    private Date convertStringToDate(String date) {
-        return Date.valueOf(date);
+    private Timestamp convertStringToTimestamp(String date) {
+        return Timestamp.valueOf(date);
     }
 
 
     @Override
     public List<ScoreRecord>  getSortedData() {
         String query = "select   hist, pl from History as hist, User as pl where hist.user = pl.id";
-
         List<Object[]> results =  (List<Object[]>) em.createQuery(query).getResultList();
         final List<ScoreRecord> records = new ArrayList<>();
         for (Object[] hiAndpl : results) {

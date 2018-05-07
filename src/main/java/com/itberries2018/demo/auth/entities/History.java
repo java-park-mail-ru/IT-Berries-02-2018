@@ -1,7 +1,7 @@
 package com.itberries2018.demo.auth.entities;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -21,7 +21,7 @@ public class History {
     private User user;
 
     @Column(name = "date_result")
-    private Date dateResult;
+    private Timestamp dateResult;
 
     public History() {
 
@@ -37,7 +37,7 @@ public class History {
     }
 
 
-    public void setDate_result(Date dateResultNew) {
+    public void setDate_result(Timestamp dateResultNew) {
         this.dateResult = dateResultNew;
     }
 

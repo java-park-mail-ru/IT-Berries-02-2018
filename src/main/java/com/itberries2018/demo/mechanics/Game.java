@@ -1,10 +1,10 @@
 package com.itberries2018.demo.mechanics;
 
-import com.itberries2018.demo.mechanics.events.game.Turn;
+/*import com.itberries2018.demo.mechanics.events.game.Turn;*/
 import com.itberries2018.demo.mechanics.player.GamePlayer;
-import com.itberries2018.demo.websockets.Message;
+/*import com.itberries2018.demo.websockets.Message;*/
 
-import java.util.ArrayList;
+/*import java.util.ArrayList;*/
 import java.util.List;
 
 //Прототип !!!
@@ -38,12 +38,12 @@ public class Game {
         this.playerList = playerList;
     }
 
-    public synchronized List<Message> finishTurn() {
+   /* public synchronized List<Message> finishTurn() {
         final List<Message> newTurnMessages = new ArrayList<>();
         newTurnMessages.add(new Turn(new Turn.Payload()));
 
         // ......................
 
         return newTurnMessages;
-    }
+    }*/
 }

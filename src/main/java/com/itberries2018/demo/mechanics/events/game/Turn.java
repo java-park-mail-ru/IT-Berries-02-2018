@@ -16,16 +16,20 @@ public class Turn extends Message {
         this.payload = payload;
     }
 
+    public Turn(String turn) {
+        this.payload = new Payload(turn);
+    }
+
     public static class Payload {
-        private final String name;
+        private final String turn;
 
         @JsonCreator
-        public Payload() {
-            this.name = "test";
+        public Payload(String turn) {
+            this.turn = turn;
         }
 
-        public String getName() {
-            return name;
+        public String getTurn() {
+            return turn;
         }
     }
 }

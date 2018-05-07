@@ -1,6 +1,6 @@
 package com.itberries2018.demo.mechanics.game;
 
-import com.itberries2018.demo.auth.models.ProfileData;
+import com.itberries2018.demo.mechanics.player.GamePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.PriorityQueue;
@@ -20,10 +20,18 @@ public class GameSession {
     }
 
     @NotNull
-    private final ProfileData ufo;
+    private final GamePlayer ufo;
+
+    public GamePlayer getHuman() {
+        return human;
+    }
 
     @NotNull
-    private final ProfileData human;
+    private final GamePlayer human;
+
+    public GamePlayer getUfo() {
+        return ufo;
+    }
 
     @NotNull
     private final GameMap map;
@@ -44,7 +52,7 @@ public class GameSession {
 
     private Turn turn;
 
-    public GameSession(@NotNull ProfileData ufo, @NotNull ProfileData human) {
+    public GameSession(@NotNull GamePlayer ufo, @NotNull GamePlayer human) {
         this.status = Status.CREATED;
         this.ufo = ufo;
         this.human = human;
