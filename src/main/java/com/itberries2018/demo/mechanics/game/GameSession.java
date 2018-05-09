@@ -1,8 +1,12 @@
 package com.itberries2018.demo.mechanics.game;
 
+import com.itberries2018.demo.mechanics.events.logic.Move;
 import com.itberries2018.demo.mechanics.player.GamePlayer;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class GameSession {
@@ -11,13 +15,21 @@ public class GameSession {
         CREATED,
         READY_FOR_START,
         OVERED,
-        IN_GAME
+        IN_GAME,
+        HUMANS_WIN,
+        UFO_WIN
     }
 
     private enum Turn {
         UFO,
         HUMAN
     }
+
+    public List<GamePlayer> getPlayerList() {
+        return playerList;
+    }
+
+    private final List<GamePlayer> playerList;
 
     @NotNull
     private final GamePlayer ufo;
@@ -53,6 +65,9 @@ public class GameSession {
     private Turn turn;
 
     public GameSession(@NotNull GamePlayer ufo, @NotNull GamePlayer human) {
+        playerList = new ArrayList<GamePlayer>();
+        playerList.add(ufo);
+        playerList.add(human);
         this.status = Status.CREATED;
         this.ufo = ufo;
         this.human = human;
@@ -122,11 +137,38 @@ public class GameSession {
         this.status = Status.OVERED;
     }
 
-    public void step() {
+    public Long whoseTurn() {
+        if (!status.equals(Status.IN_GAME)) {
+            return -1L;
+        }
         if (turn == Turn.HUMAN) {
-            checkHumnasWin();
+            return human.getId();
+        } else  {
+            return ufo.getId();
+        }
+    }
+
+    public void step(Move move) throws IOException {
+        if (turn == Turn.HUMAN) {
+            if (!this.map.setRocket(move.getTo())) {
+                throw new IOException("No valid turn");
+            }
+            this.human.setScore(this.human.getScore() + 10);
+            if (!checkHumnasWin()) {
+                this.status = Status.HUMANS_WIN;
+            } else {
+                turn = Turn.UFO;
+            }
         } else {
-            checkUfoWinCoords(this.map.getUfoCoords().getX(), this.map.getUfoCoords().getY());
+            if (!this.map.setUfo(move.getTo())) {
+                throw new IOException("No valid turn");
+            }
+            this.ufo.setScore(this.ufo.getScore() + 10);
+            if (checkUfoWinCoords(this.map.getUfoCoords().getX(), this.map.getUfoCoords().getY())) {
+                this.status = Status.UFO_WIN;
+            } else {
+                turn = Turn.HUMAN;
+            }
         }
     }
 

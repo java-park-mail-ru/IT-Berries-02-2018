@@ -9,7 +9,7 @@ public class JoinGame extends Message {
     private String side;
 
     @JsonCreator
-    public JoinGame(@JsonProperty("side") String side) {
+    public JoinGame(@JsonProperty("payload") String side) {
         this.side = side;
     }
 
