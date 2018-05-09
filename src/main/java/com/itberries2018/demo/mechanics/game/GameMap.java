@@ -1,5 +1,6 @@
 package com.itberries2018.demo.mechanics.game;
 
+import com.itberries2018.demo.mechanics.base.Coordinates;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -99,27 +100,75 @@ public class GameMap {
     }
 
     private void setUfo() {
+        int ufoStartY = this.height / 2;
+        int ufoStartX = this.cells[ufoStartY].length / 2;
+        this.setUfo(new Coordinates(ufoStartX, ufoStartY));
+    }
+
+    public boolean setUfo(Coordinates coordinates) {
         try {
-            int ufoStartY = this.height / 2;
-            int ufoStartX = this.cells[ufoStartY].length / 2;
-            this.cells[ufoStartY][ufoStartX].setOwner(MapCell.Owner.UFO);
-            this.ufoCoords = new UfoCoords(ufoStartY, ufoStartX);
+            if (this.ufoCoords != null) {
+                MapCell oldCell = this.cells[this.ufoCoords.getY()][this.ufoCoords.getX()];
+                freeCell(oldCell);
+            }
+            int ufoY = coordinates.getYval();
+            int ufoX = coordinates.getXval();
+            MapCell cell = this.cells[ufoY][ufoX];
+            if (!cell.getOwner().equals(MapCell.Owner.NOTHING)) {
+                return false;
+            }
+            cell.setOwner(MapCell.Owner.UFO);
+            blockCell(cell);
+            this.ufoCoords = new UfoCoords(ufoY, ufoX);
         } catch (Exception e) {
             throw e;
         }
+        return true;
     }
 
     private void generateRockets(int rocketCount) {
         for (int i = 0; i < rocketCount; i++) {
             int rocketY = (int) Math.round((Math.random() * (this.height - 1)));
             int rocketX = (int) Math.round((Math.random() * (this.cells[rocketY].length - 1)));
-            if (this.cells[rocketY][rocketX].getOwner() == MapCell.Owner.UFO
-                    || this.cells[rocketY][rocketX].getOwner() == MapCell.Owner.ROCKET) {
+            MapCell cell = cells[rocketY][rocketX];
+            if (!setRocket(cell)) {
                 i--;
-            } else {
-                this.cells[rocketY][rocketX].setOwner(MapCell.Owner.ROCKET);
             }
         }
+    }
+
+    public boolean setRocket(Coordinates coordinates) {
+        MapCell cell = cells[coordinates.getYval()][coordinates.getXval()];
+        return setRocket(cell);
+    }
+
+    public boolean setRocket(MapCell cell) {
+        if (!cell.getOwner().equals(MapCell.Owner.NOTHING)) {
+            return false;
+        } else {
+            cell.setOwner(MapCell.Owner.ROCKET);
+            blockCell(cell);
+            return true;
+        }
+    }
+
+    public void blockCell(MapCell cell) {
+        int cellNumber = cell.getNumber();
+        for (int i = 0; i < this.adjacencyMatrix[cellNumber].length; i++) {
+            if (this.adjacencyMatrix[cellNumber][i] == 1) {
+                this.adjacencyMatrix[i][cellNumber] = 0;
+            }
+        }
+    }
+
+    public void freeCell(MapCell cell) {
+        int cellNumber = cell.getNumber();
+        for (int i = 0; i < this.adjacencyMatrix[cellNumber].length; i++) {
+            if (this.adjacencyMatrix[cellNumber][i] == 1) {
+                this.adjacencyMatrix[i][cellNumber] = 1;
+            }
+        }
+        cell.setOwner(MapCell.Owner.NOTHING);
     }
 
     public ArrayList<MapCell> getRockets() {

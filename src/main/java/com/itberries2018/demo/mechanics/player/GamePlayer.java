@@ -1,6 +1,7 @@
 package com.itberries2018.demo.mechanics.player;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.itberries2018.demo.auth.entities.User;
 import net.minidev.json.annotate.JsonIgnore;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -8,12 +9,26 @@ public class GamePlayer {
     @JsonIgnore
     private final Long id;
     private final String name;
-    private final String sideOfTheBattle;
+    private int score;
 
     public GamePlayer(Long id, String name, String sideOfTheBattle) {
         this.id = id;
         this.name = name;
-        this.sideOfTheBattle = sideOfTheBattle;
+        this.score = 0;
+    }
+
+    public GamePlayer(User user) {
+        this.id = user.getId();
+        this.name = user.getUsername();
+        this.score = 0;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public Long getId() {
@@ -24,7 +39,4 @@ public class GamePlayer {
         return name;
     }
 
-    public String getSideOfTheBattle() {
-        return sideOfTheBattle;
-    }
 }

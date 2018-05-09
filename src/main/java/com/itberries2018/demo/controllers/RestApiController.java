@@ -14,6 +14,8 @@ import com.itberries2018.demo.auth.servicesintefaces.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +24,7 @@ import static java.util.Map.entry;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8080"},
+@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8080", "http://localhost"},
         allowCredentials = "true", allowedHeaders = {"origin", "content-type", "accept", "authorization"})
 public class RestApiController {
 
@@ -101,9 +103,9 @@ public class RestApiController {
         user.setPassword(password);
         user.setUsername(login);
         userService.saveUser(user);
+        userService.saveHistoryNote(Timestamp.valueOf(LocalDateTime.now()).toString(), 0, user);
         final User userCurrent = userService.findByEmail(email);
         httpSession.setAttribute("user", userCurrent);
-
         return new ResponseEntity<>(userCurrent, HttpStatus.CREATED);
     }
 
@@ -136,16 +138,19 @@ public class RestApiController {
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
 
         if (results.size() < startPosition + size) {
-            return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
+                    entry("length", results.size())), HttpStatus.OK);
         }
 
+        /*if (results.size() < startPosition + size) {
+            return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
+        }*/
         results = results.subList(startPosition, startPosition + size);
-
         return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();

@@ -64,7 +64,7 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public void saveUser(User user) {
-        userServiceJpaDao.add(user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
+        user = userServiceJpaDao.add(user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
     }
 
     @Override
