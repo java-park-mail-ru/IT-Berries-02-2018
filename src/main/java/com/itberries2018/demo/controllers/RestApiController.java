@@ -24,7 +24,7 @@ import static java.util.Map.entry;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8080", "http://localhost"},
+@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8080", "http://localhost:8081", "http://localhost", "*"},
         allowCredentials = "true", allowedHeaders = {"origin", "content-type", "accept", "authorization"})
 public class RestApiController {
 
@@ -142,9 +142,6 @@ public class RestApiController {
                     entry("length", results.size())), HttpStatus.OK);
         }
 
-        /*if (results.size() < startPosition + size) {
-            return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
-        }*/
         results = results.subList(startPosition, startPosition + size);
         return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);

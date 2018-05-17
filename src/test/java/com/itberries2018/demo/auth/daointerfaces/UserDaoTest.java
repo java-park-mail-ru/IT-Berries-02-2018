@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
-abstract class UserDaoTest {
+public class UserDaoTest {
 
-    protected abstract UserService getDao();
+    protected  UserService userService;
 
     @Test
     void add() {
         User user = new User("username", "user@mail.ru", "password", "avatar.png");
-        getDao().saveUser(user);
+        userService.saveUser(user);
         assertNotNull(user.getId());
         assertEquals("username", user.getUsername());
         assertEquals("password", user.getPassword());
@@ -33,14 +33,14 @@ abstract class UserDaoTest {
     void updateUser() {
         User user = new User("username", "user@mail.ru", "password", "avatar.png");
         user.setPassword("newPassword");
-        getDao().updateUser(user);
+        userService.updateUser(user);
         assertEquals("newPassword", user.getPassword());
     }
 
     @Test
     void findByEmail() {
         User user = new User("username", "user@mail.ru", "password", "avatar.png");
-        User newUser = getDao().findByEmail("user@mail.ru");
+        User newUser = userService.findByEmail("user@mail.ru");
         assertEquals(newUser.getId(), user.getId());
     }
 }
