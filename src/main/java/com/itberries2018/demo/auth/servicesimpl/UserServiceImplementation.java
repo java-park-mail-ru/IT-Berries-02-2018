@@ -73,8 +73,8 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public void updateUser(User user) {
-        userServiceJpaDao.updateUser(user);
+    public void updateUser(User user, Long id) {
+        userServiceJpaDao.updateUser(user, id);
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
@@ -34,10 +35,14 @@ public class RestApiController {
 
     private final ScoreRecordService scoreRecordService;
 
+
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    public RestApiController(UserService userService, ScoreRecordService scoreRecordService) {
+    public RestApiController(UserService userService, ScoreRecordService scoreRecordService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.scoreRecordService = scoreRecordService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -50,11 +55,12 @@ public class RestApiController {
         final LoginForm loginForm = new LoginForm(request.getParameter("email"), request.getParameter("password"));
 
         final User user = userService.findByEmail(loginForm.getEmail());
-        if (user == null || !user.getPassword().equals(loginForm.getPassword())) {
+        if (user == null || !passwordEncoder.matches(loginForm.getPassword(), user.getPassword())) {
             LOGGER.error("Unable to login. User with email {} not found.", loginForm.getEmail());
             return new ResponseEntity<>(Map.ofEntries(entry("error", "Не верно указан E-Mail или пароль")),
                     HttpStatus.BAD_REQUEST);
         }
+        user.setPassword("");
         httpSession.setAttribute("user", user);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
@@ -66,7 +72,7 @@ public class RestApiController {
 
         final String login = request.getParameter("username");
         final String email = request.getParameter("email");
-        final String password = request.getParameter("password");
+        final String password = passwordEncoder.encode(request.getParameter("password"));
         final String repPassword = request.getParameter("password_repeat");
         final String avatar = request.getParameter("avatar");
 
@@ -79,7 +85,7 @@ public class RestApiController {
                 if (password == null || password.length() < 4) {
                     return new ResponseEntity<>(new ErrorJson("Поле password должно содержать более 4 знаков!"), HttpStatus.BAD_REQUEST);
                 } else {
-                    if (repPassword == null || !password.equals(repPassword)) {
+                    if (repPassword == null || !passwordEncoder.matches(repPassword, password)) {
                         return new ResponseEntity<>(new ErrorJson("Повторите пароль корректно!"), HttpStatus.BAD_REQUEST);
                     }
                 }
@@ -105,6 +111,7 @@ public class RestApiController {
         userService.saveUser(user);
         userService.saveHistoryNote(Timestamp.valueOf(LocalDateTime.now()).toString(), 0, user);
         final User userCurrent = userService.findByEmail(email);
+        userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);
         return new ResponseEntity<>(userCurrent, HttpStatus.CREATED);
     }
@@ -154,7 +161,7 @@ public class RestApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/me", method = RequestMethod.PUT)
+    @RequestMapping(value = "/me", method = RequestMethod.POST)
     public ResponseEntity<?> meProfile(MultipartHttpServletRequest request, HttpSession httpSession, HttpServletResponse response) {
 
         final User currentUser = (User) httpSession.getAttribute("user");
@@ -169,57 +176,54 @@ public class RestApiController {
         final String newLogin = request.getParameter("username");
         final String newEmail = request.getParameter("email");
         final String password = request.getParameter("current_password");
-        final String newPassword = request.getParameter("new_password");
+        final String newPassword = passwordEncoder.encode(request.getParameter("new_password"));
         final String newPasswordRepeat = request.getParameter("new_password_repeat");
         final String avatar = request.getParameter("avatar");
 
-
-        if (!currentUser.getPassword().equals(password)) {
-            return new ResponseEntity<>("Wrong current password!",
-                    HttpStatus.UNAUTHORIZED);
+        String oldPassword = userService.findByEmail(currentUser.getEmail()).getPassword();
+        if (!passwordEncoder.matches(password, oldPassword)) {
+            return new ResponseEntity<>(new ErrorJson("Неверный пароль"), HttpStatus.BAD_REQUEST);
         }
-        if ((newEmail != null && !newEmail.equals(currentUser.getEmail()) && !newEmail.equals(""))
-                || (newLogin != null && !newLogin.equals(currentUser.getUsername()) && !newLogin.equals(""))
-                || (newPassword != null && !newPassword.equals(currentUser.getPassword()) && !newPassword.equals(""))) {
-            if (!password.equals(currentUser.getPassword())) {
-                LOGGER.error("Неверный пароль");
-                return new ResponseEntity<>(new ErrorJson("Неверный пароль"), HttpStatus.BAD_REQUEST);
+
+        if (newEmail != null && !newEmail.equals(currentUser.getEmail())) {
+            if (!newEmail.matches("(.*)@(.*)")) {
+                LOGGER.error("Не валидный email");
+                return new ResponseEntity<>(new ErrorJson("Не валидный email"), HttpStatus.BAD_REQUEST);
             }
-            if (newEmail != null && !newEmail.equals(currentUser.getEmail())) {
-                if (!newEmail.matches("(.*)@(.*)")) {
-                    LOGGER.error("Не валидный email");
-                    return new ResponseEntity<>(new ErrorJson("Не валидный email"), HttpStatus.BAD_REQUEST);
-                }
-                if (userService.findByEmail(newEmail) != null) {
-                    LOGGER.error("Пользователь уже существует");
-                    return new ResponseEntity<>(new ErrorJson("Пользователь уже существует"), HttpStatus.CONFLICT);
-                }
-                currentUser.setEmail(newEmail);
+            if (userService.findByEmail(newEmail) != null) {
+                LOGGER.error("Пользователь уже существует");
+                return new ResponseEntity<>(new ErrorJson("Пользователь уже существует"), HttpStatus.CONFLICT);
             }
-            if (newPassword != null) {
-                if (newPassword.length() < 4) {
-                    LOGGER.error("New password must be longer than 3 characters");
-                    return new ResponseEntity<>(new ErrorJson("New password must be longer than 3 characters"), HttpStatus.BAD_REQUEST);
-                }
-                if (!newPassword.equals(newPasswordRepeat)) {
-                    LOGGER.error("New passwords do not match");
-                    return new ResponseEntity<>(new ErrorJson("New passwords do not match"), HttpStatus.BAD_REQUEST);
-                }
-                currentUser.setPassword(newPassword);
+            currentUser.setEmail(newEmail);
+        }
+        if (newPassword != null) {
+            if (newPassword.length() < 4) {
+                LOGGER.error("New password must be longer than 3 characters");
+                return new ResponseEntity<>(new ErrorJson("New password must be longer than 3 characters"), HttpStatus.BAD_REQUEST);
             }
-            if (newLogin != null) {
-                currentUser.setUsername(newLogin);
+            if (!passwordEncoder.matches(newPasswordRepeat, newPassword)) {
+                LOGGER.error("New passwords do not match");
+                return new ResponseEntity<>(new ErrorJson("New passwords do not match"), HttpStatus.BAD_REQUEST);
             }
+            currentUser.setPassword(newPassword);
+        }
+        if (newLogin != null) {
+            currentUser.setUsername(newLogin);
+        } else {
+            return new ResponseEntity<>(new ErrorJson("Login is required!"), HttpStatus.BAD_REQUEST);
         }
 
         if (avatar != null && !avatar.equals("")) {
             currentUser.setAvatar(avatar);
+        } else {
+            return new ResponseEntity<>(new ErrorJson("Avatar is required!"), HttpStatus.BAD_REQUEST);
         }
 
-        userService.updateUser(currentUser);
+        Long id = currentUser.getId();
+        userService.updateUser(currentUser, id);
         httpSession.setAttribute("user", currentUser);
 
-
+        currentUser.setPassword("");
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
 }

@@ -19,7 +19,7 @@ public interface UserDao {
 
     void updateAvatar(Long id, String avatar);
 
-    void updateUser(User user);
+    void updateUser(User user, Long id);
 
 
     void remove(User id);

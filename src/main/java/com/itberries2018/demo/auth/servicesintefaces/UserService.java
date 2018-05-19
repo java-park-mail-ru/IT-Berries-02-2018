@@ -21,7 +21,7 @@ public interface UserService {
 
     void saveHistoryNote(String dateResult, int score, User user);
 
-    void updateUser(User user);
+    void updateUser(User user, Long id);
 
     List<User> findAllUsers();
 
