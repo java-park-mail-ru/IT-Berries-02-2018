@@ -52,22 +52,19 @@ public class HistoryServiceJpaDao implements HistoryDao {
 
 
     @Override
-    public List<ScoreRecord>  getSortedData() {
-        String query = "select   hist, pl from History as hist, User as pl where hist.user = pl.id";
-        List<Object[]> results =  (List<Object[]>) em.createQuery(query).getResultList();
+    public List<ScoreRecord> getSortedData() {
+
+        String query = "select u.username, max(h.score) as score "
+                + "from History h , User u where u.id = h.user group by u.username order by score desc";
+
+        List<Object[]> results = (List<Object[]>) em.createQuery(query).getResultList();
         final List<ScoreRecord> records = new ArrayList<>();
-        for (Object[] hiAndpl : results) {
-            History entityHist = (History) hiAndpl[0];
-            User entityUser = (User) hiAndpl[1];
-            records.add(new ScoreRecord(entityUser, entityHist));
-        }
-        records.sort((o1, o2) -> Long.compare(o2.getScore(), o1.getScore()));
-        for (int i = 0; i < records.size(); ++i) {
-            records.get(i).setId(i);
+
+        for (Object[] note : results) {
+            records.add(new ScoreRecord(Long.parseLong(note[1].toString()), note[0].toString()));
         }
 
         return records;
     }
-
 
 }

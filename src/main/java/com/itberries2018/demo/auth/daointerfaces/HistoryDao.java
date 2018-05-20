@@ -13,9 +13,5 @@ public interface HistoryDao {
 
     List<ScoreRecord>  getSortedData();
 
-    class DuplicateUserException extends RuntimeException {
-        public DuplicateUserException(String idHistory, Throwable cause) {
-            super("History note with id: " + idHistory + " already exists", cause);
-        }
-    }
+
 }

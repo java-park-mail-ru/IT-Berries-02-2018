@@ -55,33 +55,18 @@ public class UserServiceJpaDao implements UserDao {
         return em.find(User.class, id);
     }
 
-    @Override
-    public void updatePassword(Long userId, String newPassword) {
-        em.createQuery("UPDATE users SET users.password=:newPassword "
-                + "WHERE users.user_id=:user_id", User.class).setParameter("newPassword", newPassword).setParameter("user_id", userId);
-    }
 
     @Override
-    public void updateAvatar(Long userId, String avatar) {
-        em.createQuery("UPDATE users SET users.avatar=:avatar WHERE users.user_is=:user_id", User.class)
-                .setParameter("avatar", avatar).setParameter("user_id", userId);
-    }
-
-    @Override
-    public void updateUser(User user) {
+    public void updateUser(User user, Long id) {
         Query query = em.createQuery("UPDATE User u SET u.password=:password, u.email=:email,"
-                + " u.avatar=:avatar where u.username=:username")
+                + " u.avatar=:avatar , u.username=:username  where u.id =:id")
                 .setParameter("email", user.getEmail())
                 .setParameter("password", user.getPassword())
                 .setParameter("avatar", user.getAvatar())
-                .setParameter("username", user.getUsername());
+                .setParameter("username", user.getUsername())
+                .setParameter("id", id);
         query.executeUpdate();
 
-    }
-
-    @Override
-    public void remove(User user) {
-        em.remove(user);
     }
 
     @Override

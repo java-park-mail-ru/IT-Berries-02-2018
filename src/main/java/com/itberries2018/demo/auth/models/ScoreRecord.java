@@ -16,6 +16,11 @@ public class ScoreRecord {
 
     }
 
+    public ScoreRecord(Long score, String username) {
+        this.score = score;
+        this.username = username;
+    }
+
     public long getId() {
         return id;
     }
