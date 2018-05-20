@@ -14,15 +14,7 @@ public interface UserDao {
     User getById(Long id);
 
 
-    void updatePassword(Long id, String newPassword);
-
-
-    void updateAvatar(Long id, String avatar);
-
     void updateUser(User user, Long id);
-
-
-    void remove(User id);
 
     boolean isUserExist(User user);
 

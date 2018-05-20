@@ -55,17 +55,6 @@ public class UserServiceJpaDao implements UserDao {
         return em.find(User.class, id);
     }
 
-    @Override
-    public void updatePassword(Long userId, String newPassword) {
-        em.createQuery("UPDATE users SET users.password=:newPassword "
-                + "WHERE users.user_id=:user_id", User.class).setParameter("newPassword", newPassword).setParameter("user_id", userId);
-    }
-
-    @Override
-    public void updateAvatar(Long userId, String avatar) {
-        em.createQuery("UPDATE users SET users.avatar=:avatar WHERE users.user_is=:user_id", User.class)
-                .setParameter("avatar", avatar).setParameter("user_id", userId);
-    }
 
     @Override
     public void updateUser(User user, Long id) {
@@ -78,11 +67,6 @@ public class UserServiceJpaDao implements UserDao {
                 .setParameter("id", id);
         query.executeUpdate();
 
-    }
-
-    @Override
-    public void remove(User user) {
-        em.remove(user);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -39,30 +40,28 @@ public class RestApiControllerTest {
     @Test
     void registration() throws Exception {
 
-        //RESPONSE CREATED 201
         ResultMatcher ok = MockMvcResultMatchers.status().isOk();
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.post("/registration")
                         .header("content-type", "multipart/form-data")
-                        .param("username", "testUserName")
-                        .param("password", "testUserName")
-                        .param("password_repeat", "testUserName")
-                        .param("avatar", "avatar.png")
-                        .param("email", "testUserName@mail.ru");
-        mockMvc.perform(builder).andExpect(status().is(201));
-
-        //RESPONCE CONFLICT 409
-        mockMvc.perform(builder).andExpect(status().is(409));
+                        .param("username", "testUserName1")
+                        .param("password", "testUserName1")
+                        .param("password_repeat", "testUserName1")
+                        .param("avatar", "avatar1.png")
+                        .param("email", "testUserName1@mail.ru");
+        mockMvc.perform(builder).andExpect(status().is(HttpStatus.CREATED.value()));
 
 
-        //RESPONCE BAD_REQUEST 400
+        mockMvc.perform(builder).andExpect(status().is(HttpStatus.CONFLICT.value()));
+
+
         builder = MockMvcRequestBuilders.post("/registration")
                 .header("content-type", "multipart/form-data")
-                .param("password", "testUserName")
-                .param("password_repeat", "testUserName")
-                .param("avatar", "avatar.png")
-                .param("email", "testUserName@mail.ru");
-        mockMvc.perform(builder).andExpect(status().is(400));
+                .param("password", "testUserName1")
+                .param("password_repeat", "testUserName1")
+                .param("avatar", "avatar1.png")
+                .param("email", "testUserName1@mail.ru");
+        mockMvc.perform(builder).andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
 
 
     }
@@ -78,13 +77,13 @@ public class RestApiControllerTest {
                         .header("content-type", "multipart/form-data")
                         .param("password", "testUserName")
                         .param("email", "testUserName@mail.ru");
-        mockMvc.perform(builder).andExpect(status().is(400));
+        mockMvc.perform(builder).andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
     }
 
 
     @Test
     void authentication() throws Exception {
-        //RESPONCE Unauthorized
+
         MockHttpSession mocksession = new MockHttpSession();
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.get("/me")
@@ -95,8 +94,6 @@ public class RestApiControllerTest {
 
     @Test
     void scoreboard() throws Exception {
-        //Test data for a history note
-        //String testDateResult = "2028-01-01";
         Timestamp testDateResult = new Timestamp(System.currentTimeMillis());
         int score = 99;
         User testUser = new User("testUserName", "testUserEmail@mail.ru", "testPassword", "testAvatar.png");
@@ -112,7 +109,7 @@ public class RestApiControllerTest {
                         .param("listSize", "1")
                         .param("listNumber", "1");
 
-        mockMvc.perform(builder).andExpect(status().is(200));
+        mockMvc.perform(builder).andExpect(status().is(HttpStatus.OK.value()));
     }
 
     @Test
@@ -120,10 +117,7 @@ public class RestApiControllerTest {
         login();
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.delete("/logout").content("");
-        this.mockMvc.perform(builder).andExpect(status().is(200));
+        this.mockMvc.perform(builder).andExpect(status().is(HttpStatus.OK.value()));
     }
 
-    protected UserService getDao() {
-        return userService;
-    }
 }
