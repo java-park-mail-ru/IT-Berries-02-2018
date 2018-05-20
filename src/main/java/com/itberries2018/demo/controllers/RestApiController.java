@@ -24,7 +24,7 @@ import static java.util.Map.entry;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8080", "http://localhost"},
+@CrossOrigin(origins = {"https://itberries-frontend.herokuapp.com", "http://localhost:8080", "http://localhost", "http://localhost:8081"},
         allowCredentials = "true", allowedHeaders = {"origin", "content-type", "accept", "authorization"})
 public class RestApiController {
 

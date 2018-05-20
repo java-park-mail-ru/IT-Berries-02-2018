@@ -206,7 +206,7 @@ public class RemotePointService {
         } else {
             sessions.get(userId).sendMessage(
                 new TextMessage(objectMapper.writeValueAsString(
-                    singletonMap("message", "waiting for new users")
+                    singletonMap("message", "Waiting for new users")
                 ))
             );
         }
