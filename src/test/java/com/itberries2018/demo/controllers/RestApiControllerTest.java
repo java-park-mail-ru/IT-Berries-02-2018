@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,7 +44,7 @@ public class RestApiControllerTest {
         ResultMatcher ok = MockMvcResultMatchers.status().isOk();
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.post("/registration")
-                        .header("content-type", "multipart/form-data")
+                        .header("content-type", MediaType.MULTIPART_FORM_DATA_VALUE)
                         .param("username", "testUserName1")
                         .param("password", "testUserName1")
                         .param("password_repeat", "testUserName1")
@@ -56,7 +57,7 @@ public class RestApiControllerTest {
 
 
         builder = MockMvcRequestBuilders.post("/registration")
-                .header("content-type", "multipart/form-data")
+                .header("content-type", MediaType.MULTIPART_FORM_DATA_VALUE)
                 .param("password", "testUserName1")
                 .param("password_repeat", "testUserName1")
                 .param("avatar", "avatar1.png")
@@ -74,7 +75,7 @@ public class RestApiControllerTest {
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.post("/registration")
                         .session(mockSession)
-                        .header("content-type", "multipart/form-data")
+                        .header("content-type", MediaType.MULTIPART_FORM_DATA_VALUE)
                         .param("password", "testUserName")
                         .param("email", "testUserName@mail.ru");
         mockMvc.perform(builder).andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
