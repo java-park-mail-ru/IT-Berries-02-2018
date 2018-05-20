@@ -1,16 +1,4 @@
 language: java
-#jdk: oraclejdk9
-#spring:
-#  datasource:
-#    url: ${JDBC_DATABASE_URL}
-#    username: ${JDBC_DATABASE_USERNAME}
-#    password: ${JDBC_DATABASE_PASSWORD}
-#deploy:
-#  provider: heroku
-#  skip_cleanup: true
-#  on:
-#    all_branches: true
-#  run: mvn
 jdk:
 - oraclejdk9
 addons:
