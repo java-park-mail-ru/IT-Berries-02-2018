@@ -55,7 +55,7 @@ public class UserServiceImplementation implements UserService {
     @Override
     public User findByLogin(String name) {
         for (User user : users) {
-            if (user.getName().equalsIgnoreCase(name)) {
+            if (user.getUsername().equalsIgnoreCase(name)) {
                 return user;
             }
         }
@@ -63,8 +63,9 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public void saveUser(User user) {
+    public User saveUser(User user) {
         user = userServiceJpaDao.add(user.getUsername(), user.getEmail(), user.getPassword(), user.getAvatar());
+        return user;
     }
 
     @Override

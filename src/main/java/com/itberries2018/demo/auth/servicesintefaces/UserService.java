@@ -17,7 +17,7 @@ public interface UserService {
 
     User findByLogin(String name);
 
-    void saveUser(User user);
+    User saveUser(User user);
 
     void saveHistoryNote(String dateResult, int score, User user);
 

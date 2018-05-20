@@ -18,19 +18,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)
 @Transactional
-class RestApiControllerTest {
+public class RestApiControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -98,10 +96,11 @@ class RestApiControllerTest {
     @Test
     void scoreboard() throws Exception {
         //Test data for a history note
-        String testDateResult = "2028-01-01";
+        //String testDateResult = "2028-01-01";
+        Timestamp testDateResult = new Timestamp(System.currentTimeMillis());
         int score = 99;
         User testUser = new User("testUserName", "testUserEmail@mail.ru", "testPassword", "testAvatar.png");
-        userService.saveHistoryNote(testDateResult, score, testUser);
+        userService.saveHistoryNote(testDateResult.toString(), score, testUser);
 
 
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
@@ -118,6 +117,7 @@ class RestApiControllerTest {
 
     @Test
     void logOut() throws Exception {
+        login();
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.delete("/logout").content("");
         this.mockMvc.perform(builder).andExpect(status().is(200));

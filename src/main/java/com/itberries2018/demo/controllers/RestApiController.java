@@ -122,7 +122,7 @@ public class RestApiController {
         LOGGER.info("Trying to authentificate user");
 
         final User currentUser = (User) httpSession.getAttribute("user");
-        System.out.println(currentUser);
+        //System.out.println(currentUser);
         if (currentUser == null) {
             return new ResponseEntity<>("The user isn't authorized",
                     HttpStatus.UNAUTHORIZED);
@@ -154,7 +154,7 @@ public class RestApiController {
                 entry("length", userService.findAllUsers().size())), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    @RequestMapping(value = "/logout", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> logOut(HttpServletResponse response, HttpSession httpSession) {
         httpSession.invalidate();

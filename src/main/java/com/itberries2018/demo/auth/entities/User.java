@@ -1,27 +1,37 @@
 package com.itberries2018.demo.auth.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users_")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
     private Long id;
 
     @Column(name = "user_name")
+    @JsonProperty("username")
     private String username;
 
     @Column(name = "email")
+    @JsonProperty("email")
     private String email;
 
+    @JsonProperty("password")
     @Column(name = "password")
     private String password;
 
     @Column(name = "avatar")
+    @JsonProperty("avatar")
     private String avatar;
 
     public User() {
@@ -43,7 +53,9 @@ public class User {
         this.avatar = "noavatar.png";
     }
 
-    public User(String username, String email, String password, String avatar) {
+    @JsonCreator
+    public User(@JsonProperty(value = "username") String username, @JsonProperty(value = "email") String email,
+                @JsonProperty(value = "password") String password, @JsonProperty(value = "avatar") String avatar) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -88,9 +100,6 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return username;
-    }
 
     public String getAvatar() {
         return avatar;

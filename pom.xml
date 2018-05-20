@@ -26,12 +26,6 @@
 	</properties>
 
 	<dependencies>
-
-		<!--<dependency>-->
-			<!--<groupid>org.springframework.security</groupid>-->
-			<!--<artifactid>spring-security-core</artifactid>-->
-		<!--</dependency>-->
-
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
@@ -92,7 +86,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
+			    <scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
