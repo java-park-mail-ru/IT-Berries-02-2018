@@ -8,8 +8,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
-
+import java.util.concurrent.ScheduledExecutorService;
 public class GameSession {
+
+    public enum Turn {
+        UFO,
+        HUMAN
+    }
 
     public enum Status {
         CREATED,
@@ -18,11 +23,6 @@ public class GameSession {
         IN_GAME,
         HUMANS_WIN,
         UFO_WIN
-    }
-
-    private enum Turn {
-        UFO,
-        HUMAN
     }
 
     public List<GamePlayer> getPlayerList() {
@@ -62,7 +62,33 @@ public class GameSession {
 
     private Status status;
 
+    public Turn getTurn() {
+        return turn;
+    }
+
+    public void setTurn(Turn turn) {
+        this.turn = turn;
+    }
+
     private Turn turn;
+
+    private ScheduledExecutorService turns;
+
+    public long getGlobalTimer() {
+        return globalTimer;
+    }
+
+    public void setGlobalTimer(long globalTimer) {
+        this.globalTimer = globalTimer;
+    }
+
+    private long globalTimer;
+
+    public long getTurnTimer() {
+        return turnTimer;
+    }
+
+    private long turnTimer;
 
     public GameSession(@NotNull GamePlayer ufo, @NotNull GamePlayer human) {
         playerList = new ArrayList<GamePlayer>();
@@ -131,20 +157,30 @@ public class GameSession {
 
     public void start() {
         this.status = Status.IN_GAME;
+        this.globalTimer = System.currentTimeMillis();
     }
 
     public void end() {
+        this.globalTimer = System.currentTimeMillis() - this.globalTimer;
         this.status = Status.OVERED;
     }
 
-    public Long whoseTurn() {
+    public GamePlayer whoseTurn() {
         if (!status.equals(Status.IN_GAME)) {
-            return -1L;
+            return null;
         }
         if (turn == Turn.HUMAN) {
-            return human.getId();
+            return human;
         } else  {
-            return ufo.getId();
+            return ufo;
+        }
+    }
+
+    public void choseTurn() {
+        if (turn == Turn.HUMAN) {
+            turn = Turn.UFO;
+        } else {
+            turn = Turn.HUMAN;
         }
     }
 
@@ -153,9 +189,12 @@ public class GameSession {
             if (!this.map.setRocket(move.getTo())) {
                 throw new IOException("No valid turn");
             }
+            this.turnTimer = System.currentTimeMillis();
+            this.human.setTurns(this.human.getTurns() + 1);
             this.human.setScore(this.human.getScore() + 10);
             if (!checkHumnasWin()) {
                 this.status = Status.HUMANS_WIN;
+                this.end();
             } else {
                 turn = Turn.UFO;
             }
@@ -163,9 +202,12 @@ public class GameSession {
             if (!this.map.setUfo(move.getTo())) {
                 throw new IOException("No valid turn");
             }
+            this.turnTimer = System.currentTimeMillis();
+            this.ufo.setTurns(this.ufo.getTurns() + 1);
             this.ufo.setScore(this.ufo.getScore() + 10);
             if (checkUfoWinCoords(this.map.getUfoCoords().getX(), this.map.getUfoCoords().getY())) {
                 this.status = Status.UFO_WIN;
+                this.end();
             } else {
                 turn = Turn.HUMAN;
             }

@@ -11,19 +11,21 @@ public class GameResult extends Message {
         return payload;
     }
 
-    public GameResult(GamePlayer winner, GamePlayer loser, String reason) {
-        this.payload = new Payload(winner, loser, reason);
+    public GameResult(GamePlayer winner, GamePlayer loser, String reason, long gameTime) {
+        this.payload = new Payload(winner, loser, reason, gameTime);
     }
 
     public static class Payload {
         private final GamePlayer winner;
         private final GamePlayer loser;
         private final String reason;
+        private final long gameTime;
 
-        public Payload(GamePlayer winner, GamePlayer loser, String reason) {
+        public Payload(GamePlayer winner, GamePlayer loser, String reason, long gameTime) {
             this.winner = winner;
             this.loser = loser;
             this.reason = reason;
+            this.gameTime = gameTime;
         }
 
         public GamePlayer getWinner() {

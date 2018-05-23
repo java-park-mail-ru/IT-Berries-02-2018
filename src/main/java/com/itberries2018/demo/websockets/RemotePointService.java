@@ -7,6 +7,7 @@ import com.itberries2018.demo.mechanics.events.game.Start;
 import com.itberries2018.demo.mechanics.events.game.Turn;
 import com.itberries2018.demo.mechanics.events.logic.Move;
 import com.itberries2018.demo.mechanics.events.logic.Score;
+import com.itberries2018.demo.mechanics.events.service.Connect;
 import com.itberries2018.demo.mechanics.game.GameSession;
 import com.itberries2018.demo.mechanics.messages.JoinGame;
 import com.itberries2018.demo.mechanics.player.GamePlayer;
@@ -43,6 +44,11 @@ public class RemotePointService {
     private final Map<Long, GameSession> gameMap = new ConcurrentHashMap<>();
     public static final long TURN_DURATION_MILLS = 30 * 1000;
 
+
+    public List<GameSession> getGames() {
+        return games;
+    }
+
     public RemotePointService(@NotNull UserService userService,
                               @NotNull ScoreRecordService scoreRecordService,
                               @NotNull ObjectMapper objectMapper) {
@@ -73,17 +79,17 @@ public class RemotePointService {
 
     public void handleGameMessage(Message message, Long userId) throws IOException {
         final GameSession game = gameMap.get(userId);
-        if (userId.equals(game.whoseTurn())) {
+        if (userId.equals(game.whoseTurn().getId())) {
             game.step((Move) message);
             if (game.getStatus() == GameSession.Status.HUMANS_WIN) {
-                GameResult result = new GameResult(game.getHuman(), game.getUfo(), "HUMANS_WIN");
+                GameResult result = new GameResult(game.getHuman(), game.getUfo(), "HUMANS_WIN", game.getGlobalTimer());
                 try {
                     finishGame(game, result);
                 } catch (Exception e) {
                     logger.error("ERROR FINISH GAME");
                 }
             } else if (game.getStatus() == GameSession.Status.UFO_WIN) {
-                GameResult result = new GameResult(game.getUfo(), game.getHuman(), "UFO_WIN");
+                GameResult result = new GameResult(game.getUfo(), game.getHuman(), "UFO_WIN", game.getGlobalTimer());
                 try {
                     finishGame(game, result);
                 } catch (Exception e) {
@@ -183,13 +189,9 @@ public class RemotePointService {
             final Long aliensUserId = aliens.poll();
             waiters.remove(humansUserId);
             waiters.remove(aliensUserId);
-            final TextMessage message = new TextMessage(
-                objectMapper.writeValueAsString(
-                    singletonMap("message", "Game created, connecting to game")
-                )
-            );
-            sessions.get(humansUserId).sendMessage(message);
-            sessions.get(aliensUserId).sendMessage(message);
+            Connect message = new Connect("Connecting to your opponent");
+            sendMessageToUser(humansUserId, message);
+            sendMessageToUser(aliensUserId, message);
 
             final User humansUser = userService.findById(humansUserId);
             final User aliensUser = userService.findById(aliensUserId);
@@ -204,11 +206,7 @@ public class RemotePointService {
             sendMessageToUser(humansUserId, new Turn("human"));
             sendMessageToUser(aliensUserId, new Turn("human"));
         } else {
-            sessions.get(userId).sendMessage(
-                new TextMessage(objectMapper.writeValueAsString(
-                    singletonMap("message", "Waiting for new users")
-                ))
-            );
+            sendMessageToUser(userId, new Connect("Waiting for an opponent"));
         }
     }
 
@@ -239,7 +237,7 @@ public class RemotePointService {
                     }
                     try {
                         sendMessageToUser(winner.getId(), new GameResult(
-                            winner, loser, "Your opponent disconnected"
+                            winner, loser, "Your opponent disconnected", userGame.getGlobalTimer()
                         ));
                     } catch (IOException ignore) {
                         ignore.printStackTrace();
