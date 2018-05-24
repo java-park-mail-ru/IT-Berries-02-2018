@@ -81,6 +81,29 @@ public class RemotePointService {
         final GameSession game = gameMap.get(userId);
         if (userId.equals(game.whoseTurn().getId())) {
             game.step((Move) message);
+            if (Objects.equals(game.getHuman().getId(), userId)) {
+                Score score = new Score(game.getHuman().getScore(), game.getHuman().getName());
+                ArrayList<Message> scoreMessage = new ArrayList<Message>();
+                scoreMessage.add(score);
+                try {
+                    sendGameMessages(scoreMessage, game);
+                } catch (Exception e) {
+                    logger.error("ERROR BAD CROSS-MESENGER");
+                }
+                sendMessageToUser(game.getUfo().getId(), message);
+                sendMessageToUser(game.getUfo().getId(), new Turn("ufo"));
+            } else {
+                Score score = new Score(game.getUfo().getScore(), game.getUfo().getName());
+                ArrayList<Message> scoreMessage = new ArrayList<Message>();
+                scoreMessage.add(score);
+                try {
+                    sendGameMessages(scoreMessage, game);
+                } catch (Exception e) {
+                    logger.error("ERROR BAD CROSS-MESENGER");
+                }
+                sendMessageToUser(game.getHuman().getId(), message);
+                sendMessageToUser(game.getHuman().getId(), new Turn("human"));
+            }
             if (game.getStatus() == GameSession.Status.HUMANS_WIN) {
                 GameResult result = new GameResult(game.getHuman(), game.getUfo(), "HUMANS_WIN", game.getGlobalTimer());
                 try {
@@ -94,30 +117,6 @@ public class RemotePointService {
                     finishGame(game, result);
                 } catch (Exception e) {
                     logger.error("ERROR FINISH GAME");
-                }
-            } else {
-                if (Objects.equals(game.getHuman().getId(), userId)) {
-                    Score score = new Score(game.getHuman().getScore(), game.getHuman().getName());
-                    ArrayList<Message> scoreMessage = new ArrayList<Message>();
-                    scoreMessage.add(score);
-                    try {
-                        sendGameMessages(scoreMessage, game);
-                    } catch (Exception e) {
-                        logger.error("ERROR BAD CROSS-MESENGER");
-                    }
-                    sendMessageToUser(game.getUfo().getId(), message);
-                    sendMessageToUser(game.getUfo().getId(), new Turn("ufo"));
-                } else {
-                    Score score = new Score(game.getUfo().getScore(), game.getUfo().getName());
-                    ArrayList<Message> scoreMessage = new ArrayList<Message>();
-                    scoreMessage.add(score);
-                    try {
-                        sendGameMessages(scoreMessage, game);
-                    } catch (Exception e) {
-                        logger.error("ERROR BAD CROSS-MESENGER");
-                    }
-                    sendMessageToUser(game.getHuman().getId(), message);
-                    sendMessageToUser(game.getHuman().getId(), new Turn("human"));
                 }
             }
         }

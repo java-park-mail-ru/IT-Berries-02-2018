@@ -162,7 +162,6 @@ public class GameSession {
 
     public void end() {
         this.globalTimer = System.currentTimeMillis() - this.globalTimer;
-        this.status = Status.OVERED;
     }
 
     public GamePlayer whoseTurn() {

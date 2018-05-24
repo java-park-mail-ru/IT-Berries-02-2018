@@ -13,7 +13,7 @@ public class Connect extends Message {
         this.username = payload;
     }
 
-    public String getPayLoad() {
+    public String getPayload() {
         return username;
     }
 
