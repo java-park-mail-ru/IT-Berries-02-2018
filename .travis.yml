@@ -1,7 +1,11 @@
 language: java
-jdk: oraclejdk9
-spring:
-  datasource:
-    url: ${JDBC_DATABASE_URL}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
+jdk:
+- oraclejdk9
+addons:
+  postgresql: "9.6"
+services:
+  - postgresql
+before_script:
+  - psql -c "create user apple with password 'apple';" -U postgres
+  - psql -c "create database test_db;" -U postgres
+  - psql -c "grant all on database test_db to apple;" -U postgres

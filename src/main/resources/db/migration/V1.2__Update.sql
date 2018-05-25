@@ -1,0 +1,1 @@
+ALTER TABLE history ALTER COLUMN date_result TYPE TIMESTAMP;
