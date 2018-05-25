@@ -46,12 +46,7 @@ public class User {
         this.username = username;
     }
 
-    public User(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.avatar = "noavatar.png";
-    }
+
 
     @JsonCreator
     public User(@JsonProperty(value = "username") String username, @JsonProperty(value = "email") String email,
@@ -69,12 +64,6 @@ public class User {
         this.avatar = "noavatar.png";
     }
 
-    public User(String username, String email, String password, String avatar, long score) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.avatar = avatar;
-    }
 
     public String getEmail() {
         return email;

@@ -9,13 +9,9 @@ public interface UserService {
 
     boolean isUserExist(User user);
 
-    List<User> makeScoreboardPage();
-
     User findByEmail(String email);
 
     User findById(long id);
-
-    User findByLogin(String name);
 
     User saveUser(User user);
 

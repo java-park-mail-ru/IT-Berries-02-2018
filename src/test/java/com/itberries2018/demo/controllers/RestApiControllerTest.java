@@ -63,8 +63,6 @@ public class RestApiControllerTest {
                 .param("avatar", "avatar1.png")
                 .param("email", "testUserName1@mail.ru");
         mockMvc.perform(builder).andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-
-
     }
 
     @Test
@@ -99,7 +97,6 @@ public class RestApiControllerTest {
         int score = 99;
         User testUser = new User("testUserName", "testUserEmail@mail.ru", "testPassword", "testAvatar.png");
         userService.saveHistoryNote(testDateResult.toString(), score, testUser);
-
 
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
 

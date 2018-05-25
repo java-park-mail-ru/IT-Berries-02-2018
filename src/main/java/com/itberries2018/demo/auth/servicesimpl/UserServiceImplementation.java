@@ -52,15 +52,6 @@ public class UserServiceImplementation implements UserService {
         }
     }
 
-    @Override
-    public User findByLogin(String name) {
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(name)) {
-                return user;
-            }
-        }
-        return null;
-    }
 
     @Override
     public User saveUser(User user) {
@@ -93,10 +84,6 @@ public class UserServiceImplementation implements UserService {
         return usersData;
     }
 
-    @Override
-    public List<User> makeScoreboardPage() {
-        return users;
-    }
 
     public User findByEmail(String email) {
         return userServiceJpaDao.findByEmail(email);

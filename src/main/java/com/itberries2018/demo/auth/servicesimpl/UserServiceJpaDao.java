@@ -42,7 +42,7 @@ public class UserServiceJpaDao implements UserDao {
             }
 
         }
-        return user;
+        return findByEmail(user.getEmail());
     }
 
     @Override

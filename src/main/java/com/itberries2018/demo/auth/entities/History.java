@@ -58,7 +58,6 @@ public class History {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(idHistory, score, user, dateResult);
     }
 
