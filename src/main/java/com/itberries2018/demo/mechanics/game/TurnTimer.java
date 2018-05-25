@@ -1,15 +1,14 @@
 package com.itberries2018.demo.mechanics.game;
 
-import com.itberries2018.demo.mechanics.events.game.Turn;
 import com.itberries2018.demo.websockets.RemotePointService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class TurnTimer implements Runnable  {
 
-    GameSession session;
-    long turns;
-    GameSession.Turn turn;
+    private GameSession session;
+    private long turns;
+    private GameSession.Turn turn;
 
     @NotNull
     private final RemotePointService service;
@@ -24,9 +23,9 @@ public class TurnTimer implements Runnable  {
 
     @Override
     public void run() {
-        long time = System.currentTimeMillis();
+       /* long time = System.currentTimeMillis();
         for (GameSession session : this.service.getGames()) {
-            if (session.getStatus() == GameSession.Status.IN_GAME && (time - session.getTurnTimer()) >= 30000l) {
+            if (session.getStatus() == GameSession.Status.IN_GAME && (time - session.getTurnTimer()) >= 30000L) {
                 if (session.getTurn() == GameSession.Turn.HUMAN) {
                     try {
                         service.sendMessageToUser(session.getHuman().getId(), new Turn("ufo"));
@@ -44,6 +43,6 @@ public class TurnTimer implements Runnable  {
                 }
                 session.choseTurn();
             }
-        }
+        }*/
     }
 }

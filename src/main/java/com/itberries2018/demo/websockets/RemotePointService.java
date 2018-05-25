@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static java.util.Collections.singletonMap;
-
 @SuppressWarnings("OverlyBroadThrowsClause")
 @Service
 public class RemotePointService {
