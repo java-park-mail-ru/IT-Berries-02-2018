@@ -55,25 +55,31 @@ public class RemotePointService {
         this.objectMapper = objectMapper;
     }
 
-    /*private ScheduledExecutorService service = Executors.newScheduledThreadPool(1);*/
-    /*private ScheduledFuture future = service.scheduleAtFixedRate(new GameDispatcher(), 0, 1, TimeUnit.SECONDS);*/
+    private ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture future = service.scheduleAtFixedRate(new GameDispatcher(), 0, 1, TimeUnit.SECONDS);
 
-    /*private class GameDispatcher implements Runnable {
+    private class GameDispatcher implements Runnable {
 
         @Override
         public void run() {
             for (GameSession game : games) {
-                if (game.getLatestTurnStart() + TURN_DURATION_MILLS < System.currentTimeMillis()) {
+                if (game.getStatus() == GameSession.Status.IN_GAME && game.getLatestTurnStart() + TURN_DURATION_MILLS < System.currentTimeMillis()) {
                     try {
-                        sendGameMessages(game.finishTurn(), game);
+                        if (game.getTurn().toString().toLowerCase().equals("human")) {
+                            sendMessageToUser(game.getUfo().getId(), new Turn("ufo"));
+                            sendMessageToUser(game.getHuman().getId(), new Turn("ufo"));
+                        } else {
+                            sendMessageToUser(game.getHuman().getId(), new Turn("human"));
+                            sendMessageToUser(game.getUfo().getId(), new Turn("human"));
+                        }
+                        game.timeOut();
                     } catch (Exception ex) {
                         logger.warn("ERROR SENDING MESSAGE FROM GAMEDISPATCHER");
                     }
                 }
             }
         }
-
-    }*/
+    }
 
     public void handleGameMessage(Message message, Long userId) throws IOException {
         final GameSession game = gameMap.get(userId);
@@ -234,7 +240,7 @@ public class RemotePointService {
                     }
                     try {
                         sendMessageToUser(winner.getId(), new GameResult(
-                            winner, loser, "Your opponent disconnected", userGame.getGlobalTimer()
+                                winner, loser, "Your opponent disconnected", userGame.getGlobalTimer()
                         ));
                     } catch (IOException ignore) {
                         ignore.printStackTrace();

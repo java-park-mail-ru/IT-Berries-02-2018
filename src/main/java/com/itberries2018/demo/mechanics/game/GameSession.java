@@ -91,6 +91,15 @@ public class GameSession {
 
     private long turnTimer;
 
+    public long getLatestTurnStart() {
+        return turnTimer;
+    }
+
+    public void timeOut() {
+        choseTurn();
+        this.turnTimer = System.currentTimeMillis();
+    }
+
     public GameSession(@NotNull GamePlayer ufo, @NotNull GamePlayer human) {
         playerList = new ArrayList<GamePlayer>();
         playerList.add(ufo);
