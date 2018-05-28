@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -43,7 +44,7 @@ public class RestApiControllerTest {
 
         ResultMatcher ok = MockMvcResultMatchers.status().isOk();
         MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.post("/registration")
+                MockMvcRequestBuilders.post("/api/registration")
                         .header("content-type", MediaType.MULTIPART_FORM_DATA_VALUE)
                         .param("username", "testUserName1")
                         .param("password", "testUserName1")
@@ -56,7 +57,7 @@ public class RestApiControllerTest {
         mockMvc.perform(builder).andExpect(status().is(HttpStatus.CONFLICT.value()));
 
 
-        builder = MockMvcRequestBuilders.post("/registration")
+        builder = MockMvcRequestBuilders.post("/api/registration")
                 .header("content-type", MediaType.MULTIPART_FORM_DATA_VALUE)
                 .param("password", "testUserName1")
                 .param("password_repeat", "testUserName1")
@@ -71,7 +72,7 @@ public class RestApiControllerTest {
         MockHttpSession mockSession = new MockHttpSession();
         ResultMatcher ok = MockMvcResultMatchers.status().isOk();
         MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.post("/registration")
+                MockMvcRequestBuilders.post("/api/registration")
                         .session(mockSession)
                         .header("content-type", MediaType.MULTIPART_FORM_DATA_VALUE)
                         .param("password", "testUserName")
@@ -85,7 +86,7 @@ public class RestApiControllerTest {
 
         MockHttpSession mocksession = new MockHttpSession();
         MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.get("/me")
+                MockMvcRequestBuilders.get("/api/me")
                         .session(mocksession);
         mockMvc.perform(builder).andExpect(status().isUnauthorized());
 
@@ -103,7 +104,7 @@ public class RestApiControllerTest {
         assertNotNull(results);
 
         MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.get("/users/scoreboard")
+                MockMvcRequestBuilders.get("/api/users/scoreboard")
                         .param("listSize", "1")
                         .param("listNumber", "1");
 
@@ -114,7 +115,7 @@ public class RestApiControllerTest {
     void logOut() throws Exception {
         login();
         MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.delete("/logout").content("");
+                MockMvcRequestBuilders.delete("/api/logout").content("");
         this.mockMvc.perform(builder).andExpect(status().is(HttpStatus.OK.value()));
     }
 
