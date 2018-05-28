@@ -85,10 +85,6 @@ public class GameSession {
 
     private long globalTimer;
 
-    public long getTurnTimer() {
-        return turnTimer;
-    }
-
     private long turnTimer;
 
     public long getLatestTurnStart() {
@@ -168,6 +164,7 @@ public class GameSession {
     public void start() {
         this.status = Status.IN_GAME;
         this.globalTimer = System.currentTimeMillis();
+        this.turnTimer = System.currentTimeMillis();
     }
 
     public void end() {
