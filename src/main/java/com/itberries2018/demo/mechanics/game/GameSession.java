@@ -123,7 +123,7 @@ public class GameSession {
                 counter++;
             }
         }
-        paths[cells[ufoCoords.getY()][ufoCoords.getX()].getNumber()] =  -1;
+        paths[cells[ufoCoords.getY()][ufoCoords.getX()].getNumber()] = -1;
         MapCell startCell = cells[ufoCoords.getY()][ufoCoords.getX()];
         CellCheckContainer startCellContainer = cellsContainers[startCell.getNumber()];
         queueOfCellForSetps.add(startCellContainer.getCell().getNumber());
@@ -171,7 +171,7 @@ public class GameSession {
         }
         if (turn == Turn.HUMAN) {
             return human;
-        } else  {
+        } else {
             return ufo;
         }
     }
@@ -189,7 +189,6 @@ public class GameSession {
             if (!this.map.setRocket(move.getTo())) {
                 throw new IOException("No valid turn");
             }
-            this.turnTimer = System.currentTimeMillis();
             this.human.setTurns(this.human.getTurns() + 1);
             this.human.setScore(this.human.getScore() + 10);
             if (!checkHumnasWin()) {
@@ -198,11 +197,12 @@ public class GameSession {
             } else {
                 turn = Turn.UFO;
             }
+            this.turnTimer = System.currentTimeMillis();
         } else {
             if (!this.map.setUfo(move.getTo())) {
                 throw new IOException("No valid turn");
             }
-            this.turnTimer = System.currentTimeMillis();
+
             this.ufo.setTurns(this.ufo.getTurns() + 1);
             this.ufo.setScore(this.ufo.getScore() + 10);
             if (checkUfoWinCoords(this.map.getUfoCoords().getX(), this.map.getUfoCoords().getY())) {
@@ -211,6 +211,7 @@ public class GameSession {
             } else {
                 turn = Turn.HUMAN;
             }
+            this.turnTimer = System.currentTimeMillis();
         }
     }
 
