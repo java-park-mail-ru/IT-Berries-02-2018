@@ -76,12 +76,7 @@ public class UserServiceImplementation implements UserService {
 
     @SuppressWarnings("MagicNumber")
     private List<User> populateDummyUsers() {
-        final List<User> usersData = new ArrayList<>();
-        usersData.add(new User("user1", "user1@mail.ru", "user1", 10));
-        usersData.add(new User("user2", "user2@mail.ru", "user2", 20));
-        usersData.add(new User("user3", "user3@mail.ru", "user3", 50));
-        usersData.add(new User("user4", "user14@mail.ru", "user4", 100));
-        return usersData;
+        return null;
     }
 
 

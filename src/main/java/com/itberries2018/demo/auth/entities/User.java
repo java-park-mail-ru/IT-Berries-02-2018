@@ -57,7 +57,7 @@ public class User {
         this.avatar = avatar;
     }
 
-    public User(String username, String email, String password, long score) {
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;

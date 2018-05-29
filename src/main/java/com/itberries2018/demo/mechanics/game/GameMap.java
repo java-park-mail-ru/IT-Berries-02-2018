@@ -7,6 +7,19 @@ import java.util.ArrayList;
 
 public class GameMap {
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getBaseRocketValue() {
+
+        return baseRocketValue;
+    }
+
     private int baseRocketValue = 20;
 
     @NotNull
@@ -138,8 +151,11 @@ public class GameMap {
     }
 
     public boolean setRocket(Coordinates coordinates) {
-        MapCell cell = cells[coordinates.getYval()][coordinates.getXval()];
-        return setRocket(cell);
+        int yMoveValue = coordinates.getYval(), xMoveValue = coordinates.getXval();
+        if (xMoveValue < 0 || xMoveValue > cells[0].length || yMoveValue < 0 || yMoveValue > cells.length) {
+            return false;
+        }
+        return setRocket(cells[yMoveValue][xMoveValue]);
     }
 
     public boolean setRocket(MapCell cell) {

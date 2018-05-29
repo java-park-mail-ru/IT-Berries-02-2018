@@ -85,7 +85,7 @@ public class RemotePointService {
         final GameSession game = gameMap.get(userId);
         if (userId.equals(game.whoseTurn().getId())) {
             game.step((Move) message);
-            if (Objects.equals(game.getHuman().getId(), userId)) {
+            if (game.getHuman().getId().equals(userId)) {
                 Score score = new Score(game.getHuman().getScore(), game.getHuman().getName());
                 ArrayList<Message> scoreMessage = new ArrayList<Message>();
                 scoreMessage.add(score);
@@ -170,12 +170,6 @@ public class RemotePointService {
         sendMessageToUser(winnerId, gameResult);
         sendMessageToUser(loserId, gameResult);
         sessions.get(winnerId).close();
-        /*sessions.get(loserId).close();
-        sessions.remove(winnerId);
-        sessions.remove(loserId);
-        games.remove(game);
-        gameMap.remove(loserId);
-        gameMap.remove(winnerId);*/
     }
 
     public void addWaiter(JoinGame joinGame, long userId) throws IOException {

@@ -20,7 +20,6 @@ public class GameSession {
     public enum Status {
         CREATED,
         READY_FOR_START,
-        OVERED,
         IN_GAME,
         HUMANS_WIN,
         UFO_WIN
@@ -57,19 +56,12 @@ public class GameSession {
         return status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     private Status status;
 
     public Turn getTurn() {
         return turn;
     }
 
-    public void setTurn(Turn turn) {
-        this.turn = turn;
-    }
 
     private Turn turn;
 
@@ -79,9 +71,6 @@ public class GameSession {
         return globalTimer;
     }
 
-    public void setGlobalTimer(long globalTimer) {
-        this.globalTimer = globalTimer;
-    }
 
     private long globalTimer;
 
@@ -190,10 +179,10 @@ public class GameSession {
         }
     }
 
-    public void step(Move move) throws IOException {
+    public boolean step(Move move) {
         if (turn == Turn.HUMAN) {
             if (!this.map.setRocket(move.getTo())) {
-                throw new IOException("No valid turn");
+                return false;
             }
             this.human.setTurns(this.human.getTurns() + 1);
             this.human.setScore(this.human.getScore() + 10);
@@ -206,7 +195,7 @@ public class GameSession {
             this.turnTimer = System.currentTimeMillis();
         } else {
             if (!this.map.setUfo(move.getTo())) {
-                throw new IOException("No valid turn");
+                return false;
             }
 
             this.ufo.setTurns(this.ufo.getTurns() + 1);
@@ -219,6 +208,7 @@ public class GameSession {
             }
             this.turnTimer = System.currentTimeMillis();
         }
+        return true;
     }
 
 }
