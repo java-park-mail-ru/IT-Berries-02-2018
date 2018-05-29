@@ -39,13 +39,6 @@ class GameWebSocketHandlerTest {
 
 
     @Test
-    public void testScore() throws Exception {
-        final Message message = objectMapper.readValue("{\"event\":\"EVENTS.LOGIC.SCORE\",\"payload\":{\"score\": 50, \"name\":\"elena\"}}",
-                Message.class);
-        assertThat(message.getClass()).isEqualTo(Score.class);
-    }
-
-    @Test
     public void joinGameTest() throws IOException {
         final Message message = objectMapper.readValue("{\"event\":\"MESSAGES.JOINGAME\",\"payload\":\"humans\"}",
                 Message.class);
