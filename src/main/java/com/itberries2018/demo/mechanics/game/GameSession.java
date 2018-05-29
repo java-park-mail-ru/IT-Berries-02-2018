@@ -3,8 +3,6 @@ package com.itberries2018.demo.mechanics.game;
 import com.itberries2018.demo.mechanics.events.logic.Move;
 import com.itberries2018.demo.mechanics.player.GamePlayer;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;

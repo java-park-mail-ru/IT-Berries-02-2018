@@ -151,11 +151,12 @@ public class GameMap {
     }
 
     public boolean setRocket(Coordinates coordinates) {
-        int yMoveValue = coordinates.getYval(), xMoveValue = coordinates.getXval();
-        if (xMoveValue < 0 || xMoveValue > cells[0].length || yMoveValue < 0 || yMoveValue > cells.length) {
+        int ymoveValue = coordinates.getYval();
+        int xmoveValue = coordinates.getXval();
+        if (xmoveValue < 0 || xmoveValue > cells[0].length || ymoveValue < 0 || ymoveValue > cells.length) {
             return false;
         }
-        return setRocket(cells[yMoveValue][xMoveValue]);
+        return setRocket(cells[ymoveValue][xmoveValue]);
     }
 
     public boolean setRocket(MapCell cell) {

@@ -1,11 +1,8 @@
 package com.itberries2018.demo.websockets;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itberries2018.demo.mechanics.base.Coordinates;
 import com.itberries2018.demo.mechanics.events.game.Turn;
 import com.itberries2018.demo.mechanics.events.logic.Move;
-import com.itberries2018.demo.mechanics.events.logic.Score;
 import com.itberries2018.demo.mechanics.events.service.Connect;
 import com.itberries2018.demo.mechanics.messages.JoinGame;
 import org.junit.jupiter.api.Test;
