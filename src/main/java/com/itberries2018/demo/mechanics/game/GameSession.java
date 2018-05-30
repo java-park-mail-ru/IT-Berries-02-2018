@@ -177,7 +177,7 @@ public class GameSession {
         }
     }
 
-    public boolean step(Move move) {
+    public synchronized boolean step(Move move) {
         if (turn == Turn.HUMAN) {
             if (!this.map.setRocket(move.getTo())) {
                 return false;
