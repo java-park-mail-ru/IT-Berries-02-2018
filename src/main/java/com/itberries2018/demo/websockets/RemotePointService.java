@@ -38,7 +38,7 @@ public class RemotePointService {
     private final Queue<Long> humans = new ConcurrentLinkedDeque<>();
     private final Queue<Long> aliens = new ConcurrentLinkedDeque<>();
     private final Queue<Long> waiters = new ConcurrentLinkedDeque<>();
-    private final List<GameSession> games = new ArrayList<>();
+    private final List<GameSession> games = Collections.synchronizedList(new ArrayList());
     private final Map<Long, GameSession> gameMap = new ConcurrentHashMap<>();
     public static final long TURN_DURATION_MILLS = 30 * 1000;
 
@@ -53,10 +53,11 @@ public class RemotePointService {
         this.userService = userService;
         this.scoreRecordService = scoreRecordService;
         this.objectMapper = objectMapper;
+        this.service.scheduleAtFixedRate(new GameDispatcher(), 0, 1, TimeUnit.SECONDS);
     }
 
     private ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-    private ScheduledFuture future = service.scheduleAtFixedRate(new GameDispatcher(), 0, 1, TimeUnit.SECONDS);
+
 
     private class GameDispatcher implements Runnable {
 

@@ -21,13 +21,6 @@ public class GamePlayer {
 
     private int turns;
 
-    public GamePlayer(Long id, String name, String sideOfTheBattle) {
-        this.id = id;
-        this.name = name;
-        this.score = 0;
-        this.turns = 0;
-    }
-
     public GamePlayer(User user) {
         this.id = user.getId();
         this.name = user.getUsername();

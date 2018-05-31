@@ -3,6 +3,7 @@ package com.itberries2018.demo.mechanics.game;
 import com.itberries2018.demo.mechanics.events.logic.Move;
 import com.itberries2018.demo.mechanics.player.GamePlayer;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -61,7 +62,7 @@ public class GameSession {
     }
 
 
-    private Turn turn;
+    private volatile Turn turn;
 
     private ScheduledExecutorService turns;
 
@@ -78,7 +79,7 @@ public class GameSession {
         return turnTimer;
     }
 
-    public void timeOut() {
+    public synchronized void timeOut() {
         choseTurn();
         this.turnTimer = System.currentTimeMillis();
     }
@@ -119,7 +120,6 @@ public class GameSession {
         MapCell startCell = cells[ufoCoords.getY()][ufoCoords.getX()];
         CellCheckContainer startCellContainer = cellsContainers[startCell.getNumber()];
         queueOfCellForSetps.add(startCellContainer.getCell().getNumber());
-        int[][] adjacencyMatrix = map.getAdjacencyMatrix();
         while (!queueOfCellForSetps.isEmpty()) {
             Integer container = queueOfCellForSetps.poll();
             int[] ways = this.map.getAdjacencyMatrix()[container];
@@ -169,7 +169,7 @@ public class GameSession {
         }
     }
 
-    public void choseTurn() {
+    public synchronized void choseTurn() {
         if (turn == Turn.HUMAN) {
             turn = Turn.UFO;
         } else {
