@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GameSession {
 
@@ -58,13 +58,12 @@ public class GameSession {
     private Status status;
 
     public Turn getTurn() {
-        return turn;
+        return turn.get();
     }
 
 
-    private volatile Turn turn;
+    private AtomicReference<Turn> turn = new AtomicReference<>();
 
-    private ScheduledExecutorService turns;
 
     public long getGlobalTimer() {
         return globalTimer;
@@ -95,7 +94,7 @@ public class GameSession {
         while (!this.checkHumnasWin()) {
             map.reset();
         }
-        turn = Turn.HUMAN;
+        turn.compareAndSet(null, Turn.HUMAN);
         this.status = Status.READY_FOR_START;
     }
 
@@ -162,7 +161,7 @@ public class GameSession {
         if (!status.equals(Status.IN_GAME)) {
             return null;
         }
-        if (turn == Turn.HUMAN) {
+        if (turn.get() == Turn.HUMAN) {
             return human;
         } else {
             return ufo;
@@ -170,15 +169,15 @@ public class GameSession {
     }
 
     public synchronized void choseTurn() {
-        if (turn == Turn.HUMAN) {
-            turn = Turn.UFO;
+        if (turn.get() == Turn.HUMAN) {
+            turn.compareAndSet(Turn.HUMAN, Turn.UFO);
         } else {
-            turn = Turn.HUMAN;
+            turn.compareAndSet(Turn.UFO, Turn.HUMAN);
         }
     }
 
     public synchronized boolean step(Move move) {
-        if (turn == Turn.HUMAN) {
+        if (turn.get() == Turn.HUMAN) {
             if (!this.map.setRocket(move.getTo())) {
                 return false;
             }
@@ -188,7 +187,7 @@ public class GameSession {
                 this.status = Status.HUMANS_WIN;
                 this.end();
             } else {
-                turn = Turn.UFO;
+                turn.compareAndSet(Turn.HUMAN, Turn.UFO);
             }
             this.turnTimer = System.currentTimeMillis();
         } else {
@@ -202,7 +201,7 @@ public class GameSession {
                 this.status = Status.UFO_WIN;
                 this.end();
             } else {
-                turn = Turn.HUMAN;
+                turn.compareAndSet(Turn.UFO, Turn.HUMAN);
             }
             this.turnTimer = System.currentTimeMillis();
         }
