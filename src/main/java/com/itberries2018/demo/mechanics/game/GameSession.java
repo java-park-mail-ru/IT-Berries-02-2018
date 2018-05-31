@@ -61,7 +61,7 @@ public class GameSession {
     }
 
 
-    private Turn turn;
+    private volatile Turn turn;
 
 
     public long getGlobalTimer() {

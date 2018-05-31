@@ -65,9 +65,9 @@ public class RemotePointService {
         public void run() {
             synchronized (games) {
                 for (GameSession game : games) {
-                    synchronized (game) {
-                        if (game.getStatus() == GameSession.Status.IN_GAME && game.getLatestTurnStart()
-                                + TURN_DURATION_MILLS < System.currentTimeMillis()) {
+                    synchronized (game.getTurn()) {
+                        if (game.getStatus() == GameSession.Status.IN_GAME && (game.getLatestTurnStart()
+                                + TURN_DURATION_MILLS) < System.currentTimeMillis()) {
                             try {
                                 if (game.getTurn().toString().toLowerCase().equals("human")) {
                                     sendMessageToUser(game.getUfo().getId(), new Turn("ufo"));
