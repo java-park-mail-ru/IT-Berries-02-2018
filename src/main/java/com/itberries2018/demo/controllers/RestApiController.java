@@ -154,7 +154,7 @@ public class RestApiController {
 
         results = results.subList(startPosition, startPosition + size);
         return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
-                entry("length", userService.findAllUsers().size())), HttpStatus.OK);
+                entry("length", userService.findAllUsersForScoreBoard().size())), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.DELETE)
