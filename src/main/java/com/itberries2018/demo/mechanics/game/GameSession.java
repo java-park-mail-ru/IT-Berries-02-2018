@@ -62,7 +62,7 @@ public class GameSession {
     }
 
 
-    private AtomicReference<Turn> turn = new AtomicReference<>();
+    private AtomicReference<Turn> turn = new AtomicReference<>(null);
 
 
     public long getGlobalTimer() {
