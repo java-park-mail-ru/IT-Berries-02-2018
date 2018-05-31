@@ -63,20 +63,22 @@ public class RemotePointService {
 
         @Override
         public void run() {
-            for (GameSession game : games) {
-                if (game.getStatus() == GameSession.Status.IN_GAME && game.getLatestTurnStart()
-                        + TURN_DURATION_MILLS < System.currentTimeMillis()) {
-                    try {
-                        if (game.getTurn().toString().toLowerCase().equals("human")) {
-                            sendMessageToUser(game.getUfo().getId(), new Turn("ufo"));
-                            sendMessageToUser(game.getHuman().getId(), new Turn("ufo"));
-                        } else {
-                            sendMessageToUser(game.getHuman().getId(), new Turn("human"));
-                            sendMessageToUser(game.getUfo().getId(), new Turn("human"));
+            synchronized (games) {
+                for (GameSession game : games) {
+                    if (game.getStatus() == GameSession.Status.IN_GAME && game.getLatestTurnStart()
+                            + TURN_DURATION_MILLS < System.currentTimeMillis()) {
+                        try {
+                            if (game.getTurn().toString().toLowerCase().equals("human")) {
+                                sendMessageToUser(game.getUfo().getId(), new Turn("ufo"));
+                                sendMessageToUser(game.getHuman().getId(), new Turn("ufo"));
+                            } else {
+                                sendMessageToUser(game.getHuman().getId(), new Turn("human"));
+                                sendMessageToUser(game.getUfo().getId(), new Turn("human"));
+                            }
+                            game.timeOut();
+                        } catch (Exception ex) {
+                            logger.warn("ERROR SENDING MESSAGE FROM GAMEDISPATCHER");
                         }
-                        game.timeOut();
-                    } catch (Exception ex) {
-                        logger.warn("ERROR SENDING MESSAGE FROM GAMEDISPATCHER");
                     }
                 }
             }

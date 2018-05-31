@@ -152,8 +152,7 @@ public class RestApiController {
                     entry("length", results.size())), HttpStatus.OK);
         }
 
-        results = results.subList(startPosition, startPosition + size);
-        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
+        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results.subList(startPosition, startPosition + size)),
                 entry("length", userService.findAllUsersForScoreBoard().size())), HttpStatus.OK);
     }
 
