@@ -222,6 +222,11 @@ public class RemotePointService {
         final WebSocketSession webSocketSession = sessions.get(userId);
         if (waiters.contains(userId)) {
             waiters.remove(userId);
+            if (humans.contains(userId)) {
+                humans.remove(userId);
+            } else {
+                aliens.remove(userId);
+            }
         } else if (gameMap.containsKey(userId)) {
             final GameSession userGame = gameMap.get(userId);
             for (Map.Entry<Long, GameSession> entry : gameMap.entrySet()) {
