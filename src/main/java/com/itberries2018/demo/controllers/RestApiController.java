@@ -147,6 +147,10 @@ public class RestApiController {
         final int startPosition = (page - 1) * size;
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
 
+        if (results.size() < startPosition + size) {
+            return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
+                    entry("length", results.size())), HttpStatus.OK);
+        }
 
         return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results.subList(startPosition, startPosition + size)),
                 entry("length", userService.findAllUsersForScoreBoard().size())), HttpStatus.OK);
