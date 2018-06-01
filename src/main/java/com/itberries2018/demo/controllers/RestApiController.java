@@ -103,10 +103,8 @@ public class RestApiController {
         }
 
         final String avatarName;
-        if (avatar == null || avatar.getOriginalFilename().equals("")) {
-            avatarName = "noavatar.png";
-        } else {
-            avatarName = login + "_avatar";
+        avatarName = login + "_avatar";
+        if (avatar != null && !avatar.equals("")) {
             try {
 
                 File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/public/avatars/" + avatarName);
