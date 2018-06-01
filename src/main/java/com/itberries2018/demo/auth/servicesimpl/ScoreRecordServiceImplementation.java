@@ -26,13 +26,8 @@ public class ScoreRecordServiceImplementation implements ScoreRecordService {
     @Override
     public boolean incrementScore(Long id, int score) {
         User userSave = this.userServiceJpaDao.getById(id);
-        final User user = new User();
-        user.setAvatar(userSave.getAvatar());
-        user.setEmail(userSave.getEmail());
-        user.setPassword(userSave.getPassword());
-        user.setUsername(userSave.getUsername());
         try {
-            this.historyServiceJpaDao.add(Timestamp.valueOf(LocalDateTime.now()).toString(), score, user);
+            this.historyServiceJpaDao.add(Timestamp.valueOf(LocalDateTime.now()).toString(), score, userSave);
             return true;
         } catch (Exception ex) {
             return false;

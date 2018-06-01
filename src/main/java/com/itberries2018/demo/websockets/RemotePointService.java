@@ -66,7 +66,6 @@ public class RemotePointService {
             synchronized (games) {
                 for (GameSession game : games) {
                     synchronized (game) {
-                        synchronized (game.getTurn()) {
                             if (game.getStatus() == GameSession.Status.IN_GAME && (game.getLatestTurnStart()
                                     + TURN_DURATION_MILLS) < System.currentTimeMillis()) {
                                 try {
@@ -82,7 +81,7 @@ public class RemotePointService {
                                     logger.warn("ERROR SENDING MESSAGE FROM GAMEDISPATCHER");
                                 }
                             }
-                        }
+
                     }
                 }
             }

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
 import com.itberries2018.demo.auth.servicesintefaces.UserService;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
@@ -81,23 +82,24 @@ public class RestApiController {
         final MultipartFile avatar = request.getFile("avatar");
 
         if (login == null) {
-            return new ResponseEntity<>(new ErrorJson("Укажите  корректный логин!"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorJson("Specify a correct login!"), HttpStatus.BAD_REQUEST);
         } else {
             if (email == null || !email.matches("(.*)@(.*)")) {
-                return new ResponseEntity<>(new ErrorJson("Укажите корректный emal!"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ErrorJson("Specify a valid e-mail!"), HttpStatus.BAD_REQUEST);
             } else {
                 if (password == null || password.length() < 4) {
-                    return new ResponseEntity<>(new ErrorJson("Поле password должно содержать более 4 знаков!"), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ErrorJson("The password field must contain more than "
+                            + "4 characters!"), HttpStatus.BAD_REQUEST);
                 } else {
                     if (repPassword == null || !passwordEncoder.matches(repPassword, password)) {
-                        return new ResponseEntity<>(new ErrorJson("Повторите пароль корректно!"), HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(new ErrorJson("Repeat password correctly!"), HttpStatus.BAD_REQUEST);
                     }
                 }
             }
         }
 
         if (userService.findByEmail(email) != null) {
-            return new ResponseEntity<>(new ErrorJson("Пользователь уже существует"), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new ErrorJson("User already exists!"), HttpStatus.CONFLICT);
         }
 
         final String avatarName;
@@ -119,7 +121,7 @@ public class RestApiController {
         user.setPassword(password);
         user.setUsername(login);
         userService.saveUser(user);
-        //userService.saveHistoryNote(Timestamp.valueOf(LocalDateTime.now()).toString(), 0, user);
+
         final User userCurrent = userService.findByEmail(email);
         userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);
@@ -154,7 +156,7 @@ public class RestApiController {
 
 
         if (page < 1) {
-            return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorJson("This sheet may not be formed!"), HttpStatus.BAD_REQUEST);
         }
         final int startPosition = (page - 1) * size;
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
@@ -196,17 +198,17 @@ public class RestApiController {
 
         String oldPassword = userService.findByEmail(currentUser.getEmail()).getPassword();
         if (!passwordEncoder.matches(password, oldPassword)) {
-            return new ResponseEntity<>(new ErrorJson("Неверный пароль"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorJson("Wrong password"), HttpStatus.BAD_REQUEST);
         }
 
         if (newEmail != null && !newEmail.equals(currentUser.getEmail())) {
             if (!newEmail.matches("(.*)@(.*)")) {
-                LOGGER.error("Не валидный email");
-                return new ResponseEntity<>(new ErrorJson("Не валидный email"), HttpStatus.BAD_REQUEST);
+                LOGGER.error("Not valid email");
+                return new ResponseEntity<>(new ErrorJson("Not valid email"), HttpStatus.BAD_REQUEST);
             }
             if (userService.findByEmail(newEmail) != null) {
-                LOGGER.error("Пользователь уже существует");
-                return new ResponseEntity<>(new ErrorJson("Пользователь уже существует"), HttpStatus.CONFLICT);
+                LOGGER.error("User already exists!");
+                return new ResponseEntity<>(new ErrorJson("User already exists!"), HttpStatus.CONFLICT);
             }
             currentUser.setEmail(newEmail);
         }

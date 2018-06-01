@@ -30,14 +30,15 @@ public class HistoryServiceJpaDao implements HistoryDao {
         history.setScore(score);
         history.setUser_id(user);
         history.setDate_result(convertStringToTimestamp(dateResult));
-        em.persist(history);
+        user.getHistorySet().add(history);
+        em.persist(user);
         return history;
     }
 
     @Override
     public int getBestScoreForUserById(Long id) {
         Query que = em.createQuery("select max(h.score) as score from History h , User u where u.id = h.user   \n"
-                + "               and  u.id = :ids group by u.username, score");
+                + "               and  u.id = :ids group by u.username, score order by score desc");
         que.setParameter("ids", id);
         List<Integer> lstResult = que.getResultList();
         if (lstResult.size() > 0) {
