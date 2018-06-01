@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -30,6 +31,7 @@ import java.util.concurrent.*;
 public class RemotePointService {
     @NotNull
     private final UserService userService;
+    @Autowired
     private final ScoreRecordService scoreRecordService;
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper;
