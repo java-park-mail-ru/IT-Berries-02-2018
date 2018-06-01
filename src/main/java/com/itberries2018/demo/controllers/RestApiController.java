@@ -18,8 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -121,7 +119,7 @@ public class RestApiController {
         user.setPassword(password);
         user.setUsername(login);
         userService.saveUser(user);
-        userService.saveHistoryNote(Timestamp.valueOf(LocalDateTime.now()).toString(), 0, user);
+        //userService.saveHistoryNote(Timestamp.valueOf(LocalDateTime.now()).toString(), 0, user);
         final User userCurrent = userService.findByEmail(email);
         userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);
@@ -134,7 +132,6 @@ public class RestApiController {
         LOGGER.info("Trying to authentificate user");
 
         final User currentUser = (User) httpSession.getAttribute("user");
-        //System.out.println(currentUser);
         if (currentUser == null) {
             return new ResponseEntity<>("The user isn't authorized",
                     HttpStatus.UNAUTHORIZED);
