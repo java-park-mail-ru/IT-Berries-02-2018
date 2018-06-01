@@ -175,13 +175,25 @@ public class GameSession {
         }
     }
 
+    public int getScoreValueByTheTimeAndStepAmount() {
+        long durationTurn = System.currentTimeMillis() - this.turnTimer;
+        long[] arrBorders = {5000L, 10000L, 15000L, 20000L, 250000L, 30000L};
+        int[] arrScoreValues = {10, 7, 5, 3, 1, 0};
+        for (int i = 0; i < arrBorders.length; i++) {
+            if (durationTurn <= arrBorders[i]) {
+                return arrScoreValues[i];
+            }
+        }
+        return arrScoreValues[arrBorders.length - 1];
+    }
+
     public synchronized boolean step(Move move) {
         if (turn == Turn.HUMAN) {
             if (!this.map.setRocket(move.getTo())) {
                 return false;
             }
             this.human.setTurns(this.human.getTurns() + 1);
-            this.human.setScore(this.human.getScore() + 10);
+            this.human.setScore(this.human.getScore() + getScoreValueByTheTimeAndStepAmount());
             if (!checkHumnasWin()) {
                 this.status = Status.HUMANS_WIN;
                 this.end();
@@ -195,7 +207,7 @@ public class GameSession {
             }
 
             this.ufo.setTurns(this.ufo.getTurns() + 1);
-            this.ufo.setScore(this.ufo.getScore() + 10);
+            this.ufo.setScore(this.ufo.getScore() + getScoreValueByTheTimeAndStepAmount());
             if (checkUfoWinCoords(this.map.getUfoCoords().getX(), this.map.getUfoCoords().getY())) {
                 this.status = Status.UFO_WIN;
                 this.end();
