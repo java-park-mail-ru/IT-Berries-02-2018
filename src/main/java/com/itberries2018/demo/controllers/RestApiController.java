@@ -68,7 +68,14 @@ public class RestApiController {
         user.setPassword("");
         httpSession.setAttribute("user", user);
 
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        int score = this.scoreRecordService.getBestScoreForUserById(user.getId());
+        Map<String, Object> information = new HashMap<>();
+        information.put("username", user.getUsername());
+        information.put("email", user.getEmail());
+        information.put("avatar", user.getAvatar());
+        information.put("score", score);
+
+        return new ResponseEntity<>(information, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
@@ -123,10 +130,17 @@ public class RestApiController {
         userService.saveUser(user);
 
         final User userCurrent = userService.findByEmail(email);
-        scoreRecordService.incrementScore(userCurrent.getId(), 900);
         userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);
-        return new ResponseEntity<>(userCurrent, HttpStatus.CREATED);
+
+        int score = this.scoreRecordService.getBestScoreForUserById(userCurrent.getId());
+        Map<String, Object> information = new HashMap<>();
+        information.put("username", userCurrent.getUsername());
+        information.put("email", userCurrent.getEmail());
+        information.put("avatar", userCurrent.getAvatar());
+        information.put("score", score);
+
+        return new ResponseEntity<>(information, HttpStatus.CREATED);
     }
 
 
