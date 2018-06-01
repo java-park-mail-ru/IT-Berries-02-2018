@@ -270,8 +270,12 @@ public class RestApiController {
         Long id = currentUser.getId();
         userService.updateUser(currentUser, id);
         httpSession.setAttribute("user", currentUser);
-
-        currentUser.setPassword("");
+        int score = this.scoreRecordService.getBestScoreForUserById(currentUser.getId());
+        Map<String, Object> information = new HashMap<>();
+        information.put("username", currentUser.getUsername());
+        information.put("email", currentUser.getEmail());
+        information.put("avatar", currentUser.getAvatar());
+        information.put("score", score);
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
 }
