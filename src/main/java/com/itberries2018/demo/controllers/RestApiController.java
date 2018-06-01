@@ -105,7 +105,7 @@ public class RestApiController {
         if (avatar != null && !avatar.equals("")) {
             try {
 
-                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/public/avatars/" + avatarName);
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/avatars/" + avatarName);
                 newAvater.createNewFile();
                 avatar.transferTo(newAvater);
             } catch (IOException e) {
@@ -231,7 +231,7 @@ public class RestApiController {
             currentUser.setAvatar(currentUser.getUsername() + "_avatar");
             try {
 
-                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/public/avatars/"
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/avatars/"
                         + currentUser.getUsername() + "_avatar");
                 newAvater.createNewFile();
                 avatar.transferTo(newAvater);
@@ -246,7 +246,7 @@ public class RestApiController {
         userService.updateUser(currentUser, id);
         httpSession.setAttribute("user", currentUser);
 
-        currentUser.setPassword("");
+        //currentUser.setPassword("");
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
 }
