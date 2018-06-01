@@ -10,8 +10,9 @@ public interface HistoryDao {
 
     History add(String dateResult, int score, User user);
 
+    int getBestScoreForUserById(Long id);
 
-    List<ScoreRecord>  getSortedData();
+    List<ScoreRecord> getSortedData();
 
 
 }
