@@ -186,7 +186,7 @@ public class GameSession {
                 this.status = Status.HUMANS_WIN;
                 this.end();
             } else {
-                turn = Turn.UFO;
+                choseTurn();
             }
             this.turnTimer = System.currentTimeMillis();
         } else {
@@ -200,7 +200,7 @@ public class GameSession {
                 this.status = Status.UFO_WIN;
                 this.end();
             } else {
-                turn = Turn.HUMAN;
+                choseTurn();
             }
             this.turnTimer = System.currentTimeMillis();
         }
