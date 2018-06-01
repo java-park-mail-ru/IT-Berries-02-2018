@@ -219,10 +219,13 @@ public class RestApiController {
         }
 
         if (avatar != null && !avatar.equals("")) {
-            currentUser.setAvatar(currentUser.getUsername() + "_" + avatar.getName());
+            currentUser.setAvatar(currentUser.getUsername() + "_avatar");
             try {
-                avatar.transferTo(new File("/home/cloud/front/2018_1_IT-Berries/public/avatars/"
-                        + currentUser.getUsername() + "_" + avatar.getName()));
+
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/public/avatars/"
+                        + currentUser.getUsername() + "_avatar");
+                newAvater.createNewFile();
+                avatar.transferTo(newAvater);
             } catch (IOException e) {
                 e.printStackTrace();
             }
