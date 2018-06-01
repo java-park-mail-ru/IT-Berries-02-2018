@@ -13,11 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
 import com.itberries2018.demo.auth.servicesintefaces.UserService;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -136,7 +136,13 @@ public class RestApiController {
             return new ResponseEntity<>("The user isn't authorized",
                     HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        int score = this.scoreRecordService.getBestScoreForUserById(currentUser.getId());
+        Map<String, Object> information = new HashMap<>();
+        information.put("username", currentUser.getUsername());
+        information.put("email", currentUser.getEmail());
+        information.put("avatar", currentUser.getAvatar());
+        information.put("score", score);
+        return new ResponseEntity<>(information, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/users/scoreboard", method = RequestMethod.GET)

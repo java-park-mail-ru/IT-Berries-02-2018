@@ -9,7 +9,6 @@ import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-
 @Service
 public class ScoreRecordServiceImplementation implements ScoreRecordService {
 
@@ -38,5 +37,9 @@ public class ScoreRecordServiceImplementation implements ScoreRecordService {
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    public int getBestScoreForUserById(Long id) {
+        return this.historyServiceJpaDao.getBestScoreForUserById(id);
     }
 }
