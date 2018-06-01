@@ -117,7 +117,6 @@ public class RestApiController {
         userService.saveUser(user);
 
         final User userCurrent = userService.findByEmail(email);
-        scoreRecordService.incrementScore(userCurrent.getId(), 900);
         userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);
         return new ResponseEntity<>(userCurrent, HttpStatus.CREATED);
