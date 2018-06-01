@@ -235,12 +235,12 @@ public class RestApiController {
             }
             currentUser.setEmail(newEmail);
         }
-        if (newPassword != null) {
+        if (newPassword != null && !newPasswordRepeat.equals("")) {
             if (newPassword.length() < 4) {
                 LOGGER.error("New password must be longer than 3 characters");
                 return new ResponseEntity<>(new ErrorJson("New password must be longer than 3 characters"), HttpStatus.BAD_REQUEST);
             }
-            if (!passwordEncoder.matches(newPasswordRepeat, newPassword)) {
+            if (!passwordEncoder.matches(newPasswordRepeat, passwordEncoder.encode(newPassword))) {
                 LOGGER.error("New passwords do not match");
                 return new ResponseEntity<>(new ErrorJson("New passwords do not match"), HttpStatus.BAD_REQUEST);
             }
@@ -274,12 +274,13 @@ public class RestApiController {
         //currentUser.setPassword("");
         int score = this.scoreRecordService.getBestScoreForUserById(currentUser.getId());
         Map<String, Object> information = new HashMap<>();
+        information.put("id", currentUser.getId());
         information.put("username", currentUser.getUsername());
         information.put("email", currentUser.getEmail());
         information.put("avatar", currentUser.getAvatar());
         information.put("score", score);
-
         return new ResponseEntity<>(information, HttpStatus.OK);
+
     }
 }
 
