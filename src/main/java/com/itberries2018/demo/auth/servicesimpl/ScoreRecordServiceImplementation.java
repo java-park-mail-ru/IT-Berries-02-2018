@@ -5,6 +5,8 @@ import com.itberries2018.demo.auth.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ public class ScoreRecordServiceImplementation implements ScoreRecordService {
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, noRollbackFor = Exception.class)
     public boolean incrementScore(Long id, int score) {
 
         User userSave = this.userServiceJpaDao.getById(id);
