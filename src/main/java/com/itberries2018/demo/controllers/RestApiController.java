@@ -111,10 +111,10 @@ public class RestApiController {
 
         final String avatarName;
         avatarName = login + "_avatar";
-        if (avatar != null && !avatar.equals("")) {
+        if (avatar != null && !avatar.getOriginalFilename().equals("")) {
             try {
 
-                File newAvater = new File("/home/ivan/Park/semest2/front/DZ2/2018_1_IT-Berries/avatars/" + avatarName);
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/avatars/" + avatarName);
                 newAvater.createNewFile();
                 avatar.transferTo(newAvater);
             } catch (IOException e) {
@@ -248,7 +248,7 @@ public class RestApiController {
             currentUser.setAvatar(currentUser.getUsername() + "_avatar");
             try {
 
-                File newAvater = new File("/home/ivan/Park/semest2/front/DZ2/2018_1_IT-Berries/avatars/"
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/avatars/"
                         + currentUser.getUsername() + "_avatar");
                 newAvater.createNewFile();
                 avatar.transferTo(newAvater);
