@@ -150,7 +150,7 @@ public class User {
     }
 
     @Access(AccessType.PROPERTY)
-    @OneToMany(targetEntity = History.class, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = History.class, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     public Set<History> getHistorySet() {
         return historySet;
     }

@@ -25,6 +25,7 @@ public class ScoreRecordServiceImplementation implements ScoreRecordService {
 
     @Override
     public boolean incrementScore(Long id, int score) {
+
         User userSave = this.userServiceJpaDao.getById(id);
         try {
             this.historyServiceJpaDao.add(Timestamp.valueOf(LocalDateTime.now()).toString(), score, userSave);
