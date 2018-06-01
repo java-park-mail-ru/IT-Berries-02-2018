@@ -80,7 +80,7 @@ public class RestApiController {
         final String email = request.getParameter("email");
         final String password = passwordEncoder.encode(request.getParameter("password"));
         final String repPassword = request.getParameter("password_repeat");
-        final String avatar = request.getParameter("avatar");
+        final MultipartFile avatar = request.getFile("avatar");
 
         if (login == null) {
             return new ResponseEntity<>(new ErrorJson("Укажите  корректный логин!"), HttpStatus.BAD_REQUEST);
@@ -103,10 +103,18 @@ public class RestApiController {
         }
 
         final String avatarName;
-        if (avatar == null || avatar.equals("")) {
+        if (avatar == null || avatar.getOriginalFilename().equals("")) {
             avatarName = "noavatar.png";
         } else {
-            avatarName = avatar;
+            avatarName = login + "_avatar";
+            try {
+
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/public/avatars/" + avatarName);
+                newAvater.createNewFile();
+                avatar.transferTo(newAvater);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         final User user = new User();
