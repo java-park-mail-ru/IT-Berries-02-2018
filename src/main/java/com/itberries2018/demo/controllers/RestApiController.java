@@ -62,10 +62,10 @@ public class RestApiController {
         final User user = userService.findByEmail(loginForm.getEmail());
         if (user == null || !passwordEncoder.matches(loginForm.getPassword(), user.getPassword())) {
             LOGGER.error("Unable to login. User with email {} not found.", loginForm.getEmail());
-            return new ResponseEntity<>(Map.ofEntries(entry("error", "Не верно указан E-Mail или пароль")),
+            return new ResponseEntity<>(Map.ofEntries(entry("error", "Wrong email or password..")),
                     HttpStatus.BAD_REQUEST);
         }
-        user.setPassword("");
+        //user.setPassword("");
         httpSession.setAttribute("user", user);
 
         int score = this.scoreRecordService.getBestScoreForUserById(user.getId());
@@ -124,7 +124,7 @@ public class RestApiController {
         userService.saveUser(user);
 
         final User userCurrent = userService.findByEmail(email);
-        userCurrent.setPassword("");
+        //userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);
 
         int score = this.scoreRecordService.getBestScoreForUserById(userCurrent.getId());
