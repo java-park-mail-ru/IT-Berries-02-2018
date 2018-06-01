@@ -175,7 +175,7 @@ public class RemotePointService {
         final Long loserId = gameResult.getPayload().getLoser().getId();
         final int loserScore = gameResult.getPayload().getLoser().getScore();
         scoreRecordService.incrementScore(winnerId, winnerScore);
-        scoreRecordService.incrementScore(loserId, -winnerScore);
+        //scoreRecordService.incrementScore(loserId, -winnerScore);
         sendMessageToUser(winnerId, gameResult);
         sendMessageToUser(loserId, gameResult);
         sessions.get(winnerId).close();

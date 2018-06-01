@@ -62,10 +62,10 @@ public class RestApiController {
         final User user = userService.findByEmail(loginForm.getEmail());
         if (user == null || !passwordEncoder.matches(loginForm.getPassword(), user.getPassword())) {
             LOGGER.error("Unable to login. User with email {} not found.", loginForm.getEmail());
-            return new ResponseEntity<>(Map.ofEntries(entry("error", "Не верно указан E-Mail или пароль")),
+            return new ResponseEntity<>(Map.ofEntries(entry("error", "Wrong email or password..")),
                     HttpStatus.BAD_REQUEST);
         }
-        user.setPassword("");
+        //user.setPassword("");
         httpSession.setAttribute("user", user);
 
         int score = this.scoreRecordService.getBestScoreForUserById(user.getId());
@@ -130,7 +130,7 @@ public class RestApiController {
         userService.saveUser(user);
 
         final User userCurrent = userService.findByEmail(email);
-        userCurrent.setPassword("");
+        //userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);
 
         int score = this.scoreRecordService.getBestScoreForUserById(userCurrent.getId());
@@ -168,7 +168,7 @@ public class RestApiController {
 
         final int page = Integer.parseInt(spage);
         final int size = Integer.parseInt(ssize);
-
+        List<ScoreRecord> numericResults;
 
         if (page < 1) {
             return new ResponseEntity<>(new ErrorJson("This sheet may not be formed!"), HttpStatus.BAD_REQUEST);
@@ -177,11 +177,19 @@ public class RestApiController {
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
 
         if (results.size() < startPosition + size) {
-            return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results.subList(startPosition, results.size())),
+            numericResults = results.subList(startPosition, results.size());
+            for (int i = 0; i < numericResults.size(); i++) {
+                numericResults.get(i).setId(i + 1);
+            }
+            return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                     entry("length", results.size())), HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results.subList(startPosition, startPosition + size)),
+        numericResults = results.subList(startPosition, startPosition + size);
+        for (int i = 0; i < numericResults.size(); i++) {
+            numericResults.get(i).setId(i + 1);
+        }
+        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                 entry("length", userService.findAllUsersForScoreBoard().size())), HttpStatus.OK);
     }
 
