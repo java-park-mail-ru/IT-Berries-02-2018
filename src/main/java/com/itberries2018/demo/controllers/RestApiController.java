@@ -162,7 +162,7 @@ public class RestApiController {
 
         final int page = Integer.parseInt(spage);
         final int size = Integer.parseInt(ssize);
-
+        List<ScoreRecord> numericResults;
 
         if (page < 1) {
             return new ResponseEntity<>(new ErrorJson("This sheet may not be formed!"), HttpStatus.BAD_REQUEST);
@@ -171,11 +171,19 @@ public class RestApiController {
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
 
         if (results.size() < startPosition + size) {
-            return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results.subList(startPosition, results.size())),
+            numericResults = results.subList(startPosition, results.size());
+            for (int i = 0; i < numericResults.size(); i++) {
+                numericResults.get(i).setId(i + 1);
+            }
+            return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                     entry("length", results.size())), HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results.subList(startPosition, startPosition + size)),
+        numericResults = results.subList(startPosition, startPosition + size);
+        for (int i = 0; i < numericResults.size(); i++) {
+            numericResults.get(i).setId(i + 1);
+        }
+        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                 entry("length", userService.findAllUsersForScoreBoard().size())), HttpStatus.OK);
     }
 
