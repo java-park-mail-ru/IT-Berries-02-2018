@@ -113,7 +113,7 @@ public class RestApiController {
         user.setPassword(password);
         user.setUsername(login);
         userService.saveUser(user);
-        //userService.saveHistoryNote(Timestamp.valueOf(LocalDateTime.now()).toString(), 0, user);
+
         final User userCurrent = userService.findByEmail(email);
         userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);

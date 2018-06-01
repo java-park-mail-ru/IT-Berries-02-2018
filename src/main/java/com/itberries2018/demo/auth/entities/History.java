@@ -1,5 +1,7 @@
 package com.itberries2018.demo.auth.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -15,10 +17,14 @@ public class History {
     @Column(name = "score")
     private Integer score;
 
-
-    @ManyToOne(targetEntity = User.class, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
+
+    public History(Integer score, User user, Timestamp dateResult) {
+        this.score = score;
+        this.user = user;
+        this.dateResult = dateResult;
+    }
 
     @Column(name = "date_result")
     private Timestamp dateResult;
@@ -27,6 +33,9 @@ public class History {
 
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Integer getScore() {
         return score;
@@ -63,6 +72,13 @@ public class History {
 
     public void setUser_id(User newUser) {
         this.user = newUser;
+    }
+
+    @Access(AccessType.PROPERTY)
+    @JoinColumn(name = "user_id")
+    @ManyToOne()
+    public User getUser() {
+        return user;
     }
 }
 

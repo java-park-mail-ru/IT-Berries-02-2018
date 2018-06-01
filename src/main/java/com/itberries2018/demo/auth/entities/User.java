@@ -3,9 +3,12 @@ package com.itberries2018.demo.auth.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.*;
 
 @Entity
@@ -34,8 +37,17 @@ public class User {
     @JsonProperty("avatar")
     private String avatar;
 
+
     public User() {
 
+    }
+
+    @JsonManagedReference
+    private Set<History> historySet = new HashSet<>();
+
+
+    public void setHistorySet(Set<History> historySet) {
+        this.historySet = historySet;
     }
 
     public String getUsername() {
@@ -47,7 +59,6 @@ public class User {
     }
 
 
-
     @JsonCreator
     public User(@JsonProperty(value = "username") String username, @JsonProperty(value = "email") String email,
                 @JsonProperty(value = "password") String password, @JsonProperty(value = "avatar") String avatar) {
@@ -55,6 +66,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.avatar = avatar;
+        this.historySet = new HashSet<>();
     }
 
     public User(String username, String email, String password) {
@@ -62,7 +74,9 @@ public class User {
         this.email = email;
         this.password = password;
         this.avatar = "noavatar.png";
+        this.historySet = new HashSet<>();
     }
+
 
 
     public String getEmail() {
@@ -134,4 +148,11 @@ public class User {
                 + '\'' + ", password='" + password
                 + '\'' + ", avatar='" + avatar + '\'' + '}';
     }
+
+    @Access(AccessType.PROPERTY)
+    @OneToMany(targetEntity = History.class, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<History> getHistorySet() {
+        return historySet;
+    }
+
 }
