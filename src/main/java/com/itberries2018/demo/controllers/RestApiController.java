@@ -9,12 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
 import com.itberries2018.demo.auth.servicesintefaces.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -180,7 +183,7 @@ public class RestApiController {
         final String password = request.getParameter("current_password");
         final String newPassword = passwordEncoder.encode(request.getParameter("new_password"));
         final String newPasswordRepeat = request.getParameter("new_password_repeat");
-        final String avatar = request.getParameter("avatar");
+        final MultipartFile avatar = request.getFile("avatar");
 
         String oldPassword = userService.findByEmail(currentUser.getEmail()).getPassword();
         if (!passwordEncoder.matches(password, oldPassword)) {
@@ -216,7 +219,16 @@ public class RestApiController {
         }
 
         if (avatar != null && !avatar.equals("")) {
-            currentUser.setAvatar(avatar);
+            currentUser.setAvatar(currentUser.getUsername() + "_avatar");
+            try {
+
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/public/avatars/"
+                        + currentUser.getUsername() + "_avatar");
+                newAvater.createNewFile();
+                avatar.transferTo(newAvater);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             return new ResponseEntity<>(new ErrorJson("Avatar is required!"), HttpStatus.BAD_REQUEST);
         }
