@@ -170,19 +170,17 @@ public class RestApiController {
         final int startPosition = (page - 1) * size;
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
 
+        for (int i = 0; i < results.size(); i++) {
+            results.get(i).setId(i + 1);
+        }
+
         if (results.size() < startPosition + size) {
             numericResults = results.subList(startPosition, results.size());
-            for (int i = 0; i < numericResults.size(); i++) {
-                numericResults.get(i).setId(i + 1);
-            }
             return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                     entry("length", results.size())), HttpStatus.OK);
         }
 
         numericResults = results.subList(startPosition, startPosition + size);
-        for (int i = 0; i < numericResults.size(); i++) {
-            numericResults.get(i).setId(i + 1);
-        }
         return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                 entry("length", userService.findAllUsersForScoreBoard().size())), HttpStatus.OK);
     }
@@ -209,8 +207,10 @@ public class RestApiController {
         final String newLogin = request.getParameter("username");
         final String newEmail = request.getParameter("email");
         final String password = request.getParameter("current_password");
+
         final String newPassword = passwordEncoder.encode(request.getParameter("new_password"));
         final String newPasswordRepeat = request.getParameter("new_password_repeat");
+
         final MultipartFile avatar = request.getFile("avatar");
 
         String oldPassword = userService.findByEmail(currentUser.getEmail()).getPassword();
