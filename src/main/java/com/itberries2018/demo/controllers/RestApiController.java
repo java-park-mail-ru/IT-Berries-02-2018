@@ -214,13 +214,18 @@ public class RestApiController {
         final String newEmail = request.getParameter("email");
         final String password = request.getParameter("current_password");
 
-        final String newPassword = passwordEncoder.encode(request.getParameter("new_password"));
-        final String newPasswordRepeat = request.getParameter("new_password_repeat");
+        String newPassword = null;
+        String newPasswordRepeat = null;
+
+        if (newPassword != null && newPasswordRepeat != null) {
+            newPassword = passwordEncoder.encode(request.getParameter("new_password"));
+            newPasswordRepeat = request.getParameter("new_password_repeat");
+        }
 
         final MultipartFile avatar = request.getFile("avatar");
 
         String oldPassword = userService.findByEmail(currentUser.getEmail()).getPassword();
-        if (!passwordEncoder.matches(password, oldPassword)) {
+        if (password == null || !passwordEncoder.matches(password, oldPassword)) {
             return new ResponseEntity<>(new ErrorJson("Wrong password"), HttpStatus.BAD_REQUEST);
         }
 
@@ -235,7 +240,7 @@ public class RestApiController {
             }
             currentUser.setEmail(newEmail);
         }
-        if (newPassword != null && !newPasswordRepeat.equals("")) {
+        if (newPasswordRepeat != null && !passwordEncoder.matches(newPasswordRepeat, oldPassword)) {
             if (newPassword.length() < 4) {
                 LOGGER.error("New password must be longer than 3 characters");
                 return new ResponseEntity<>(new ErrorJson("New password must be longer than 3 characters"), HttpStatus.BAD_REQUEST);
