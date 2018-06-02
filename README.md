@@ -14,6 +14,8 @@ Catch the alien - логическая настольная игра для дв
 [![Build Status](https://travis-ci.org/ElenaOshkina/IT-Berries-02-2018.svg?branch=master)](https://travis-ci.org/ElenaOshkina/IT-Berries-02-2018)
 
 ## Project links
+### Production
+- [Web](https://it-berries.neat.codes/)
 ### Frontend
 - [Repository](https://github.com/frontend-park-mail-ru/2018_1_IT-Berries)
 - [Web](https://itberries-frontend.herokuapp.com)
