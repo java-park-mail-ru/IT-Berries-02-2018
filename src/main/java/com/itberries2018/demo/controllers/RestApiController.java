@@ -179,7 +179,7 @@ public class RestApiController {
         if (results.size() < startPosition + size) {
             numericResults = results.subList(startPosition, results.size());
             for (int i = 0; i < numericResults.size(); i++) {
-                numericResults.get(i).setId(i + 1);
+                numericResults.get(i).setId(startPosition + i + 1);
             }
             return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                     entry("length", results.size())), HttpStatus.OK);
@@ -187,7 +187,7 @@ public class RestApiController {
 
         numericResults = results.subList(startPosition, startPosition + size);
         for (int i = 0; i < numericResults.size(); i++) {
-            numericResults.get(i).setId(i + 1);
+            numericResults.get(i).setId(startPosition + i + 1);
         }
         return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                 entry("length", userService.findAllUsersForScoreBoard().size())), HttpStatus.OK);
@@ -240,7 +240,7 @@ public class RestApiController {
                 LOGGER.error("New password must be longer than 3 characters");
                 return new ResponseEntity<>(new ErrorJson("New password must be longer than 3 characters"), HttpStatus.BAD_REQUEST);
             }
-            if (!passwordEncoder.matches(newPasswordRepeat, passwordEncoder.encode(newPassword))) {
+            if (!passwordEncoder.matches(newPasswordRepeat,newPassword)) {
                 LOGGER.error("New passwords do not match");
                 return new ResponseEntity<>(new ErrorJson("New passwords do not match"), HttpStatus.BAD_REQUEST);
             }
