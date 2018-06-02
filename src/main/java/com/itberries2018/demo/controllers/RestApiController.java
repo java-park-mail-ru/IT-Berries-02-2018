@@ -214,12 +214,11 @@ public class RestApiController {
         final String newEmail = request.getParameter("email");
         final String password = request.getParameter("current_password");
 
-        String newPassword = null;
-        String newPasswordRepeat = null;
+        final String newPassword = passwordEncoder.encode(request.getParameter("new_password"));
+        final String newPasswordRepeat = request.getParameter("new_password_repeat");
 
-        if (newPassword != null && newPasswordRepeat != null) {
-            newPassword = passwordEncoder.encode(request.getParameter("new_password"));
-            newPasswordRepeat = request.getParameter("new_password_repeat");
+        if (!newLogin.equals("") && !newLogin.equals(currentUser.getUsername())) {
+            currentUser.setUsername(newLogin);
         }
 
         final MultipartFile avatar = request.getFile("avatar");
@@ -229,7 +228,7 @@ public class RestApiController {
             return new ResponseEntity<>(new ErrorJson("Wrong password"), HttpStatus.BAD_REQUEST);
         }
 
-        if (newEmail != null && !newEmail.equals(currentUser.getEmail())) {
+        if (newEmail != null && !newEmail.equals("") && !newEmail.equals(currentUser.getEmail())) {
             if (!newEmail.matches("(.*)@(.*)")) {
                 LOGGER.error("Not valid email");
                 return new ResponseEntity<>(new ErrorJson("Not valid email"), HttpStatus.BAD_REQUEST);
@@ -240,22 +239,18 @@ public class RestApiController {
             }
             currentUser.setEmail(newEmail);
         }
-        if (newPasswordRepeat != null && !passwordEncoder.matches(newPasswordRepeat, oldPassword)) {
+        if (newPasswordRepeat != null && !newPasswordRepeat.equals("") && !passwordEncoder.matches(newPasswordRepeat, oldPassword)) {
             if (newPassword.length() < 4) {
                 LOGGER.error("New password must be longer than 3 characters");
                 return new ResponseEntity<>(new ErrorJson("New password must be longer than 3 characters"), HttpStatus.BAD_REQUEST);
             }
-            if (!passwordEncoder.matches(newPasswordRepeat, passwordEncoder.encode(newPassword))) {
+            if (!passwordEncoder.matches(newPasswordRepeat, newPassword)) {
                 LOGGER.error("New passwords do not match");
                 return new ResponseEntity<>(new ErrorJson("New passwords do not match"), HttpStatus.BAD_REQUEST);
             }
             currentUser.setPassword(newPassword);
         }
-        if (newLogin != null) {
-            currentUser.setUsername(newLogin);
-        } else {
-            return new ResponseEntity<>(new ErrorJson("Login is required!"), HttpStatus.BAD_REQUEST);
-        }
+
 
         if (avatar != null && !avatar.equals("")) {
             currentUser.setAvatar(currentUser.getUsername() + "_avatar");
