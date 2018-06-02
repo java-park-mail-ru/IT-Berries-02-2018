@@ -38,7 +38,7 @@ public class HistoryServiceJpaDao implements HistoryDao {
     @Override
     public int getBestScoreForUserById(Long id) {
         Query que = em.createQuery("select max(h.score) as score from History h , User u where u.id = h.user   \n"
-                + "               and  u.id = :ids and score > 0  group by u.username, score order by score desc");
+                + "               and  u.id = :ids  group by u.username, score order by score desc");
         que.setParameter("ids", id);
         List<Integer> lstResult = que.getResultList();
         if (lstResult.size() > 0) {
@@ -63,7 +63,7 @@ public class HistoryServiceJpaDao implements HistoryDao {
         final List<ScoreRecord> records = new ArrayList<>();
 
         for (Object[] note : results) {
-            if (Long.parseLong(note[1].toString()) != 0) {
+            if (Long.parseLong(note[1].toString()) > 0) {
                 records.add(new ScoreRecord(Long.parseLong(note[1].toString()), note[0].toString()));
             }
         }
