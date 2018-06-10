@@ -5,10 +5,11 @@ import com.itberries2018.demo.auth.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-
 
 @Service
 public class ScoreRecordServiceImplementation implements ScoreRecordService {
@@ -25,18 +26,19 @@ public class ScoreRecordServiceImplementation implements ScoreRecordService {
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, noRollbackFor = Exception.class)
     public boolean incrementScore(Long id, int score) {
+
         User userSave = this.userServiceJpaDao.getById(id);
-        final User user = new User();
-        user.setAvatar(userSave.getAvatar());
-        user.setEmail(userSave.getEmail());
-        user.setPassword(userSave.getPassword());
-        user.setUsername(userSave.getUsername());
         try {
-            this.historyServiceJpaDao.add(Timestamp.valueOf(LocalDateTime.now()).toString(), score, user);
+            this.historyServiceJpaDao.add(Timestamp.valueOf(LocalDateTime.now()).toString(), score, userSave);
             return true;
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    public int getBestScoreForUserById(Long id) {
+        return this.historyServiceJpaDao.getBestScoreForUserById(id);
     }
 }

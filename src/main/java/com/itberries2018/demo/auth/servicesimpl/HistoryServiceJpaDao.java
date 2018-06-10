@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -29,8 +30,22 @@ public class HistoryServiceJpaDao implements HistoryDao {
         history.setScore(score);
         history.setUser_id(user);
         history.setDate_result(convertStringToTimestamp(dateResult));
-        em.persist(history);
+        user.getHistorySet().add(history);
+        em.persist(user);
         return history;
+    }
+
+    @Override
+    public int getBestScoreForUserById(Long id) {
+        Query que = em.createQuery("select max(h.score) as score from History h , User u where u.id = h.user   \n"
+                + "               and  u.id = :ids  group by u.username, score order by score desc");
+        que.setParameter("ids", id);
+        List<Integer> lstResult = que.getResultList();
+        if (lstResult.size() > 0) {
+            return lstResult.get(0);
+        } else {
+            return 0;
+        }
     }
 
     private Timestamp convertStringToTimestamp(String date) {
@@ -48,7 +63,7 @@ public class HistoryServiceJpaDao implements HistoryDao {
         final List<ScoreRecord> records = new ArrayList<>();
 
         for (Object[] note : results) {
-            if (Long.parseLong(note[1].toString()) != 0) {
+            if (Long.parseLong(note[1].toString()) > 0) {
                 records.add(new ScoreRecord(Long.parseLong(note[1].toString()), note[0].toString()));
             }
         }

@@ -3,10 +3,10 @@ package com.itberries2018.demo.mechanics.game;
 import com.itberries2018.demo.mechanics.events.logic.Move;
 import com.itberries2018.demo.mechanics.player.GamePlayer;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class GameSession {
 
@@ -56,14 +56,13 @@ public class GameSession {
 
     private Status status;
 
-    public Turn getTurn() {
+    public synchronized Turn getTurn() {
         return turn;
     }
 
 
-    private Turn turn;
+    private volatile Turn turn;
 
-    private ScheduledExecutorService turns;
 
     public long getGlobalTimer() {
         return globalTimer;
@@ -74,11 +73,11 @@ public class GameSession {
 
     private long turnTimer;
 
-    public long getLatestTurnStart() {
+    public synchronized long getLatestTurnStart() {
         return turnTimer;
     }
 
-    public void timeOut() {
+    public synchronized void timeOut() {
         choseTurn();
         this.turnTimer = System.currentTimeMillis();
     }
@@ -119,7 +118,6 @@ public class GameSession {
         MapCell startCell = cells[ufoCoords.getY()][ufoCoords.getX()];
         CellCheckContainer startCellContainer = cellsContainers[startCell.getNumber()];
         queueOfCellForSetps.add(startCellContainer.getCell().getNumber());
-        int[][] adjacencyMatrix = map.getAdjacencyMatrix();
         while (!queueOfCellForSetps.isEmpty()) {
             Integer container = queueOfCellForSetps.poll();
             int[] ways = this.map.getAdjacencyMatrix()[container];
@@ -169,7 +167,7 @@ public class GameSession {
         }
     }
 
-    public void choseTurn() {
+    public synchronized void choseTurn() {
         if (turn == Turn.HUMAN) {
             turn = Turn.UFO;
         } else {
@@ -177,18 +175,30 @@ public class GameSession {
         }
     }
 
-    public boolean step(Move move) {
+    public int getScoreValueByTheTimeAndStepAmount() {
+        long durationTurn = System.currentTimeMillis() - this.turnTimer;
+        long[] arrBorders = {5000L, 10000L, 15000L, 20000L, 250000L, 30000L};
+        int[] arrScoreValues = {10, 7, 5, 3, 1, 0};
+        for (int i = 0; i < arrBorders.length; i++) {
+            if (durationTurn <= arrBorders[i]) {
+                return arrScoreValues[i];
+            }
+        }
+        return arrScoreValues[arrBorders.length - 1];
+    }
+
+    public synchronized boolean step(Move move) {
         if (turn == Turn.HUMAN) {
             if (!this.map.setRocket(move.getTo())) {
                 return false;
             }
             this.human.setTurns(this.human.getTurns() + 1);
-            this.human.setScore(this.human.getScore() + 10);
+            this.human.setScore(this.human.getScore() + getScoreValueByTheTimeAndStepAmount());
             if (!checkHumnasWin()) {
                 this.status = Status.HUMANS_WIN;
                 this.end();
             } else {
-                turn = Turn.UFO;
+                choseTurn();
             }
             this.turnTimer = System.currentTimeMillis();
         } else {
@@ -197,12 +207,12 @@ public class GameSession {
             }
 
             this.ufo.setTurns(this.ufo.getTurns() + 1);
-            this.ufo.setScore(this.ufo.getScore() + 10);
+            this.ufo.setScore(this.ufo.getScore() + getScoreValueByTheTimeAndStepAmount());
             if (checkUfoWinCoords(this.map.getUfoCoords().getX(), this.map.getUfoCoords().getY())) {
                 this.status = Status.UFO_WIN;
                 this.end();
             } else {
-                turn = Turn.HUMAN;
+                choseTurn();
             }
             this.turnTimer = System.currentTimeMillis();
         }

@@ -9,14 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.itberries2018.demo.auth.servicesintefaces.ScoreRecordService;
 import com.itberries2018.demo.auth.servicesintefaces.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,13 +62,20 @@ public class RestApiController {
         final User user = userService.findByEmail(loginForm.getEmail());
         if (user == null || !passwordEncoder.matches(loginForm.getPassword(), user.getPassword())) {
             LOGGER.error("Unable to login. User with email {} not found.", loginForm.getEmail());
-            return new ResponseEntity<>(Map.ofEntries(entry("error", "Не верно указан E-Mail или пароль")),
+            return new ResponseEntity<>(Map.ofEntries(entry("error", "Wrong email or password..")),
                     HttpStatus.BAD_REQUEST);
         }
-        user.setPassword("");
+        //user.setPassword("");
         httpSession.setAttribute("user", user);
 
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        int score = this.scoreRecordService.getBestScoreForUserById(user.getId());
+        Map<String, Object> information = new HashMap<>();
+        information.put("username", user.getUsername());
+        information.put("email", user.getEmail());
+        information.put("avatar", user.getAvatar());
+        information.put("score", score);
+
+        return new ResponseEntity<>(information, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
@@ -77,33 +86,40 @@ public class RestApiController {
         final String email = request.getParameter("email");
         final String password = passwordEncoder.encode(request.getParameter("password"));
         final String repPassword = request.getParameter("password_repeat");
-        final String avatar = request.getParameter("avatar");
+        final MultipartFile avatar = request.getFile("avatar");
 
         if (login == null) {
-            return new ResponseEntity<>(new ErrorJson("Укажите  корректный логин!"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorJson("Specify a correct login!"), HttpStatus.BAD_REQUEST);
         } else {
             if (email == null || !email.matches("(.*)@(.*)")) {
-                return new ResponseEntity<>(new ErrorJson("Укажите корректный emal!"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ErrorJson("Specify a valid e-mail!"), HttpStatus.BAD_REQUEST);
             } else {
                 if (password == null || password.length() < 4) {
-                    return new ResponseEntity<>(new ErrorJson("Поле password должно содержать более 4 знаков!"), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ErrorJson("The password field must contain more than "
+                            + "4 characters!"), HttpStatus.BAD_REQUEST);
                 } else {
                     if (repPassword == null || !passwordEncoder.matches(repPassword, password)) {
-                        return new ResponseEntity<>(new ErrorJson("Повторите пароль корректно!"), HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(new ErrorJson("Repeat password correctly!"), HttpStatus.BAD_REQUEST);
                     }
                 }
             }
         }
 
         if (userService.findByEmail(email) != null) {
-            return new ResponseEntity<>(new ErrorJson("Пользователь уже существует"), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new ErrorJson("User already exists!"), HttpStatus.CONFLICT);
         }
 
         final String avatarName;
-        if (avatar == null || avatar.equals("")) {
-            avatarName = "noavatar.png";
-        } else {
-            avatarName = avatar;
+        avatarName = login + "_avatar";
+        if (avatar != null && !avatar.getOriginalFilename().equals("")) {
+            try {
+
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/avatars/" + avatarName);
+                newAvater.createNewFile();
+                avatar.transferTo(newAvater);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         final User user = new User();
@@ -112,11 +128,19 @@ public class RestApiController {
         user.setPassword(password);
         user.setUsername(login);
         userService.saveUser(user);
-        userService.saveHistoryNote(Timestamp.valueOf(LocalDateTime.now()).toString(), 0, user);
+
         final User userCurrent = userService.findByEmail(email);
-        userCurrent.setPassword("");
+        //userCurrent.setPassword("");
         httpSession.setAttribute("user", userCurrent);
-        return new ResponseEntity<>(userCurrent, HttpStatus.CREATED);
+
+        int score = this.scoreRecordService.getBestScoreForUserById(userCurrent.getId());
+        Map<String, Object> information = new HashMap<>();
+        information.put("username", userCurrent.getUsername());
+        information.put("email", userCurrent.getEmail());
+        information.put("avatar", userCurrent.getAvatar());
+        information.put("score", score);
+
+        return new ResponseEntity<>(information, HttpStatus.CREATED);
     }
 
 
@@ -125,12 +149,17 @@ public class RestApiController {
         LOGGER.info("Trying to authentificate user");
 
         final User currentUser = (User) httpSession.getAttribute("user");
-        //System.out.println(currentUser);
         if (currentUser == null) {
             return new ResponseEntity<>("The user isn't authorized",
                     HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        int score = this.scoreRecordService.getBestScoreForUserById(currentUser.getId());
+        Map<String, Object> information = new HashMap<>();
+        information.put("username", currentUser.getUsername());
+        information.put("email", currentUser.getEmail());
+        information.put("avatar", currentUser.getAvatar());
+        information.put("score", score);
+        return new ResponseEntity<>(information, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/users/scoreboard", method = RequestMethod.GET)
@@ -139,22 +168,29 @@ public class RestApiController {
 
         final int page = Integer.parseInt(spage);
         final int size = Integer.parseInt(ssize);
-
+        List<ScoreRecord> numericResults;
 
         if (page < 1) {
-            return new ResponseEntity<>(new ErrorJson("Данный лист не может быть сформирован"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorJson("This sheet may not be formed!"), HttpStatus.BAD_REQUEST);
         }
         final int startPosition = (page - 1) * size;
         List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
 
+        for (int i = 0; i < results.size(); i++) {
+            results.get(i).setId(i + 1);
+        }
+
         if (results.size() < startPosition + size) {
-            return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
+            numericResults = results.subList(startPosition, results.size());
+
+            return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
                     entry("length", results.size())), HttpStatus.OK);
         }
 
-        results = results.subList(startPosition, startPosition + size);
-        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", results),
-                entry("length", userService.findAllUsers().size())), HttpStatus.OK);
+        numericResults = results.subList(startPosition, startPosition + size);
+
+        return new ResponseEntity<>(Map.ofEntries(entry("scorelist", numericResults),
+                entry("length", userService.findAllUsersForScoreBoard().size())), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.DELETE)
@@ -179,45 +215,58 @@ public class RestApiController {
         final String newLogin = request.getParameter("username");
         final String newEmail = request.getParameter("email");
         final String password = request.getParameter("current_password");
+
         final String newPassword = passwordEncoder.encode(request.getParameter("new_password"));
         final String newPasswordRepeat = request.getParameter("new_password_repeat");
-        final String avatar = request.getParameter("avatar");
 
-        String oldPassword = userService.findByEmail(currentUser.getEmail()).getPassword();
-        if (!passwordEncoder.matches(password, oldPassword)) {
-            return new ResponseEntity<>(new ErrorJson("Неверный пароль"), HttpStatus.BAD_REQUEST);
+        if (!newLogin.equals("") && !newLogin.equals(currentUser.getUsername())) {
+            currentUser.setUsername(newLogin);
         }
 
-        if (newEmail != null && !newEmail.equals(currentUser.getEmail())) {
+        final MultipartFile avatar = request.getFile("avatar");
+
+        String oldPassword = userService.findByEmail(currentUser.getEmail()).getPassword();
+        if (password == null || !passwordEncoder.matches(password, oldPassword)) {
+            return new ResponseEntity<>(new ErrorJson("Wrong password"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (newEmail != null && !newEmail.equals("") && !newEmail.equals(currentUser.getEmail())) {
             if (!newEmail.matches("(.*)@(.*)")) {
-                LOGGER.error("Не валидный email");
-                return new ResponseEntity<>(new ErrorJson("Не валидный email"), HttpStatus.BAD_REQUEST);
+                LOGGER.error("Not valid email");
+                return new ResponseEntity<>(new ErrorJson("Not valid email"), HttpStatus.BAD_REQUEST);
             }
             if (userService.findByEmail(newEmail) != null) {
-                LOGGER.error("Пользователь уже существует");
-                return new ResponseEntity<>(new ErrorJson("Пользователь уже существует"), HttpStatus.CONFLICT);
+                LOGGER.error("User already exists!");
+                return new ResponseEntity<>(new ErrorJson("User already exists!"), HttpStatus.CONFLICT);
             }
             currentUser.setEmail(newEmail);
         }
-        if (newPassword != null) {
+        if (newPasswordRepeat != null && !newPasswordRepeat.equals("") && !passwordEncoder.matches(newPasswordRepeat, oldPassword)) {
             if (newPassword.length() < 4) {
                 LOGGER.error("New password must be longer than 3 characters");
                 return new ResponseEntity<>(new ErrorJson("New password must be longer than 3 characters"), HttpStatus.BAD_REQUEST);
             }
+
             if (!passwordEncoder.matches(newPasswordRepeat, newPassword)) {
+
                 LOGGER.error("New passwords do not match");
                 return new ResponseEntity<>(new ErrorJson("New passwords do not match"), HttpStatus.BAD_REQUEST);
             }
             currentUser.setPassword(newPassword);
         }
-        if (newLogin != null) {
-            currentUser.setUsername(newLogin);
-        } else {
-            return new ResponseEntity<>(new ErrorJson("Login is required!"), HttpStatus.BAD_REQUEST);
-        }
+
 
         if (avatar != null && !avatar.equals("")) {
-            currentUser.setAvatar(avatar);
+            currentUser.setAvatar(currentUser.getUsername() + "_avatar");
+            try {
+
+                File newAvater = new File("/home/cloud/front/2018_1_IT-Berries/avatars/"
+                        + currentUser.getUsername() + "_avatar");
+                newAvater.createNewFile();
+                avatar.transferTo(newAvater);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             return new ResponseEntity<>(new ErrorJson("Avatar is required!"), HttpStatus.BAD_REQUEST);
         }
@@ -226,8 +275,16 @@ public class RestApiController {
         userService.updateUser(currentUser, id);
         httpSession.setAttribute("user", currentUser);
 
-        currentUser.setPassword("");
-        return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        //currentUser.setPassword("");
+        int score = this.scoreRecordService.getBestScoreForUserById(currentUser.getId());
+        Map<String, Object> information = new HashMap<>();
+        information.put("id", currentUser.getId());
+        information.put("username", currentUser.getUsername());
+        information.put("email", currentUser.getEmail());
+        information.put("avatar", currentUser.getAvatar());
+        information.put("score", score);
+        return new ResponseEntity<>(information, HttpStatus.OK);
+
     }
 }
 

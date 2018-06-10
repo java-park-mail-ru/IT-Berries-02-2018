@@ -94,14 +94,6 @@ public class RestApiControllerTest {
 
     @Test
     void scoreboard() throws Exception {
-        Timestamp testDateResult = new Timestamp(System.currentTimeMillis());
-        int score = 99;
-        User testUser = new User("testUserName", "testUserEmail@mail.ru", "testPassword", "testAvatar.png");
-        userService.saveHistoryNote(testDateResult.toString(), score, testUser);
-
-        List<ScoreRecord> results = userService.findAllUsersForScoreBoard();
-
-        assertNotNull(results);
 
         MockHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.get("/api/users/scoreboard")

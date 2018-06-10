@@ -76,7 +76,7 @@ public class UserDaoTest {
 
     @Test
     public void findByIdFalse() {
-        User userExpected = userService.findById(4);
+        User userExpected = userService.findById(999);
         Assert.assertEquals(userExpected, null);
     }
 

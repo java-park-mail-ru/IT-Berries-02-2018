@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -30,6 +31,7 @@ import java.util.concurrent.*;
 public class RemotePointService {
     @NotNull
     private final UserService userService;
+    @Autowired
     private final ScoreRecordService scoreRecordService;
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper;
@@ -38,7 +40,7 @@ public class RemotePointService {
     private final Queue<Long> humans = new ConcurrentLinkedDeque<>();
     private final Queue<Long> aliens = new ConcurrentLinkedDeque<>();
     private final Queue<Long> waiters = new ConcurrentLinkedDeque<>();
-    private final List<GameSession> games = new ArrayList<>();
+    private final List<GameSession> games = Collections.synchronizedList(new ArrayList());
     private final Map<Long, GameSession> gameMap = new ConcurrentHashMap<>();
     public static final long TURN_DURATION_MILLS = 30 * 1000;
 
@@ -53,29 +55,35 @@ public class RemotePointService {
         this.userService = userService;
         this.scoreRecordService = scoreRecordService;
         this.objectMapper = objectMapper;
+        this.service.scheduleAtFixedRate(new GameDispatcher(), 0, 1, TimeUnit.SECONDS);
     }
 
     private ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-    private ScheduledFuture future = service.scheduleAtFixedRate(new GameDispatcher(), 0, 1, TimeUnit.SECONDS);
+
 
     private class GameDispatcher implements Runnable {
 
         @Override
         public void run() {
-            for (GameSession game : games) {
-                if (game.getStatus() == GameSession.Status.IN_GAME && game.getLatestTurnStart()
-                        + TURN_DURATION_MILLS < System.currentTimeMillis()) {
-                    try {
-                        if (game.getTurn().toString().toLowerCase().equals("human")) {
-                            sendMessageToUser(game.getUfo().getId(), new Turn("ufo"));
-                            sendMessageToUser(game.getHuman().getId(), new Turn("ufo"));
-                        } else {
-                            sendMessageToUser(game.getHuman().getId(), new Turn("human"));
-                            sendMessageToUser(game.getUfo().getId(), new Turn("human"));
-                        }
-                        game.timeOut();
-                    } catch (Exception ex) {
-                        logger.warn("ERROR SENDING MESSAGE FROM GAMEDISPATCHER");
+            synchronized (games) {
+                for (GameSession game : games) {
+                    synchronized (game) {
+                            if (game.getStatus() == GameSession.Status.IN_GAME && (game.getLatestTurnStart()
+                                    + TURN_DURATION_MILLS) < System.currentTimeMillis()) {
+                                try {
+                                    if (game.getTurn().toString().toLowerCase().equals("human")) {
+                                        sendMessageToUser(game.getUfo().getId(), new Turn("ufo"));
+                                        sendMessageToUser(game.getHuman().getId(), new Turn("ufo"));
+                                    } else {
+                                        sendMessageToUser(game.getHuman().getId(), new Turn("human"));
+                                        sendMessageToUser(game.getUfo().getId(), new Turn("human"));
+                                    }
+                                    game.timeOut();
+                                } catch (Exception ex) {
+                                    logger.warn("ERROR SENDING MESSAGE FROM GAMEDISPATCHER");
+                                }
+                            }
+
                     }
                 }
             }
@@ -167,7 +175,7 @@ public class RemotePointService {
         final Long loserId = gameResult.getPayload().getLoser().getId();
         final int loserScore = gameResult.getPayload().getLoser().getScore();
         scoreRecordService.incrementScore(winnerId, winnerScore);
-        scoreRecordService.incrementScore(loserId, -winnerScore);
+        //scoreRecordService.incrementScore(loserId, -winnerScore);
         sendMessageToUser(winnerId, gameResult);
         sendMessageToUser(loserId, gameResult);
         sessions.get(winnerId).close();
@@ -219,6 +227,11 @@ public class RemotePointService {
         final WebSocketSession webSocketSession = sessions.get(userId);
         if (waiters.contains(userId)) {
             waiters.remove(userId);
+            if (humans.contains(userId)) {
+                humans.remove(userId);
+            } else {
+                aliens.remove(userId);
+            }
         } else if (gameMap.containsKey(userId)) {
             final GameSession userGame = gameMap.get(userId);
             for (Map.Entry<Long, GameSession> entry : gameMap.entrySet()) {
